@@ -131,12 +131,6 @@ button { color: inherit; }
   z-index: 1;
 }
 
-.intro-prelude {
-  margin: 0 0 10px;
-  color: #c5c2ca;
-  font-size: clamp(.92rem, 1.8vw, 1.08rem);
-  letter-spacing: .04em;
-}
 
 .intro-card h1 {
   margin: 0;
@@ -362,12 +356,13 @@ button { color: inherit; }
 .video-card {
   overflow: hidden;
   align-self: start;
+  height: min(72vh, 760px);
 }
 
 .video-stage {
   position: relative;
   aspect-ratio: 9 / 16;
-  height: min(72vh, 760px);
+  height: 100%;
   width: auto;
   max-width: 100%;
   margin: 0 auto;
@@ -384,34 +379,38 @@ video {
   height: 100%;
   object-fit: contain;
   background: #050508;
+  pointer-events: none;
+  transition: filter .35s ease, transform .35s ease, opacity .25s ease;
 }
 
-.video-cover {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  border: 0;
-  cursor: pointer;
-  color: #ece9df;
-  background: linear-gradient(180deg, rgba(7,7,11,.12), rgba(7,7,11,.60));
-  transition: opacity .3s ease;
+/* Keine nativen Browser-Steuerelemente: Start, Timer und Replay liegen rechts. */
+video::-webkit-media-controls,
+video::-webkit-media-controls-enclosure {
+  display: none !important;
 }
-.video-cover.is-hidden { opacity: 0; pointer-events: none; }
-.play-orb {
-  display: grid;
-  width: 76px;
-  height: 76px;
-  place-items: center;
-  padding-left: 4px;
-  border: 1px solid rgba(242,215,156,.42);
-  border-radius: 50%;
-  color: #1d160d;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  box-shadow: 0 12px 45px rgba(214,173,98,.20);
+
+video.is-obscured {
+  filter: blur(42px) brightness(.34) saturate(.45);
+  transform: scale(1.18);
+}
+
+video.is-hidden-media {
+  display: none;
+}
+
+.post-video-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #050508;
+  animation: postImageIn .45s ease both;
+}
+
+.post-video-image.is-hidden { display: none; }
+
+@keyframes postImageIn {
+  from { opacity: 0; transform: scale(1.035); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .video-missing {
@@ -430,21 +429,18 @@ video {
 .video-missing p { margin: 8px 0 0; color: var(--muted); line-height: 1.5; }
 .missing-icon { color: var(--gold); font-size: 2.2rem; }
 
-.video-meta {
-  display: flex;
-  justify-content: space-between;
-  padding: 14px 18px;
-  color: var(--muted);
-  border-top: 1px solid var(--line);
-  font-size: .82rem;
-}
-.video-status { color: #cbc8cf; }
 
 .answer-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(24px, 4vw, 42px);
+  height: min(72vh, 760px);
+  padding: clamp(30px, 4vw, 46px);
+}
+
+.answer-head {
+  padding-right: 112px;
 }
 .answer-head h3 {
   margin: 0 0 10px;
@@ -455,7 +451,40 @@ video {
 }
 .answer-head > p:last-child { margin: 0; color: var(--muted); line-height: 1.55; }
 
-#answerForm { margin-top: 28px; }
+
+.video-action-btn {
+  width: 100%;
+  margin-top: 30px;
+  padding: 16px 20px;
+  border: 1px solid rgba(242,215,156,.34);
+  border-radius: 16px;
+  cursor: pointer;
+  color: #1b160e;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  box-shadow: 0 12px 34px rgba(214,173,98,.12);
+  font-weight: 800;
+  letter-spacing: .01em;
+  transition: transform .2s ease, opacity .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.video-action-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 42px rgba(214,173,98,.18);
+}
+.video-action-btn:disabled {
+  cursor: default;
+  color: #b8b4ac;
+  border-color: rgba(255,255,255,.09);
+  background: rgba(255,255,255,.045);
+  box-shadow: none;
+  opacity: .72;
+}
+.video-action-btn.is-missing {
+  color: #d1cdd3;
+  border-color: rgba(255,255,255,.09);
+  background: rgba(255,255,255,.04);
+}
+
+#answerForm { margin-top: 20px; }
 .input-wrap {
   display: flex;
   align-items: center;
@@ -498,15 +527,46 @@ video {
 }
 .submit-btn:disabled { cursor: default; opacity: .35; }
 
-.attempts { display: flex; gap: 8px; margin-top: 18px; }
-.attempt-dot {
-  width: 30px;
-  height: 5px;
-  border-radius: 999px;
-  background: rgba(214,173,98,.70);
-  transition: opacity .25s ease, transform .25s ease, background .25s ease;
+.attempts {
+  position: absolute;
+  top: clamp(24px, 3vw, 38px);
+  right: clamp(24px, 3vw, 38px);
+  display: flex;
+  width: 92px;
+  height: 92px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(214,173,98,.35);
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, rgba(242,215,156,.10), rgba(214,173,98,.035) 62%, transparent 63%);
+  box-shadow: inset 0 0 24px rgba(214,173,98,.045), 0 10px 30px rgba(0,0,0,.16);
+  text-align: center;
+  transition: border-color .25s ease, transform .25s ease, background .25s ease;
 }
-.attempt-dot.is-spent { opacity: .22; transform: scaleX(.82); background: var(--danger); }
+.attempts-label {
+  color: var(--muted);
+  font-size: .66rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+.attempts-number {
+  margin-top: 3px;
+  color: var(--gold-light);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: .95;
+}
+.attempts.is-last {
+  border-color: rgba(226,128,120,.48);
+  background: radial-gradient(circle at 40% 30%, rgba(226,128,120,.10), rgba(226,128,120,.025) 62%, transparent 63%);
+}
+.attempts.is-last .attempts-number,
+.attempts.is-empty .attempts-number { color: #e5a19a; }
+.attempts.is-empty { opacity: .72; }
 
 .feedback {
   min-height: 48px;
@@ -624,7 +684,9 @@ video {
 @media (max-width: 880px) {
   .screen { padding: 24px 0; }
   .quiz-grid { grid-template-columns: 1fr; }
-  .answer-card { min-height: 380px; }
+  .video-card { height: auto; }
+  .video-stage { height: auto; }
+  .answer-card { height: auto; min-height: 420px; }
   .progress-wrap { width: min(240px, 42vw); }
   .letter-board { grid-template-columns: repeat(6, 1fr); }
 }
@@ -643,7 +705,10 @@ video {
   .solution-heading h3 { max-width: 230px; }
   .letter-slot { min-height: 48px; border-radius: 10px; }
   .video-stage { width: min(100%, 390px); height: auto; max-width: 100%; }
-  .video-meta { font-size: .74rem; }
+  .answer-head { padding-right: 88px; }
+  .attempts { top: 24px; right: 24px; width: 76px; height: 76px; }
+  .attempts-label { font-size: .55rem; }
+  .attempts-number { font-size: 1.65rem; }
   .final-word { letter-spacing: .04em; }
 }
 

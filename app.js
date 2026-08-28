@@ -6,7 +6,9 @@
     currentIndex: 0,
     attemptsLeft: 3,
     resolved: false,
-    revealedSlots: new Set()
+    revealedSlots: new Set(),
+    videoWatched: false,
+    videoMissing: false
   };
 
   const els = {
@@ -22,11 +24,10 @@
     solvedCount: document.getElementById("solvedCount"),
     letterBoard: document.getElementById("letterBoard"),
     video: document.getElementById("questionVideo"),
-    videoCover: document.getElementById("videoCover"),
+    postVideoImage: document.getElementById("postVideoImage"),
+    videoActionBtn: document.getElementById("videoActionBtn"),
     videoMissing: document.getElementById("videoMissing"),
     missingCopy: document.getElementById("missingCopy"),
-    videoFilename: document.getElementById("videoFilename"),
-    videoStatus: document.getElementById("videoStatus"),
     answerTitle: document.getElementById("answerTitle"),
     answerHint: document.getElementById("answerHint"),
     answerForm: document.getElementById("answerForm"),
@@ -78,13 +79,12 @@
   }
 
   function renderAttempts() {
-    els.attempts.innerHTML = "";
-    for (let i = 0; i < 3; i++) {
-      const dot = document.createElement("span");
-      dot.className = "attempt-dot";
-      if (i >= state.attemptsLeft) dot.classList.add("is-spent");
-      els.attempts.appendChild(dot);
-    }
+    els.attempts.innerHTML = `
+      <span class="attempts-label">Übrige<br>Versuche</span>
+      <strong class="attempts-number">${state.attemptsLeft}</strong>
+    `;
+    els.attempts.classList.toggle("is-last", state.attemptsLeft === 1);
+    els.attempts.classList.toggle("is-empty", state.attemptsLeft === 0);
   }
 
   function resetAnswerUi() {
@@ -100,18 +100,85 @@
     renderAttempts();
   }
 
+  function formatTime(seconds) {
+    if (!Number.isFinite(seconds) || seconds < 0) return "--:--";
+    const total = Math.ceil(seconds);
+    const minutes = Math.floor(total / 60);
+    const secs = total % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  }
+
+  function updateVideoActionButton() {
+    els.videoActionBtn.classList.toggle("is-missing", state.videoMissing);
+
+    if (state.videoMissing) {
+      els.videoActionBtn.disabled = true;
+      els.videoActionBtn.textContent = "Video fehlt";
+      return;
+    }
+
+    if (!els.video.paused && !els.video.ended) {
+      const remaining = els.video.duration - els.video.currentTime;
+      els.videoActionBtn.disabled = true;
+      els.videoActionBtn.textContent = `Noch ${formatTime(remaining)}`;
+      return;
+    }
+
+    els.videoActionBtn.disabled = false;
+    els.videoActionBtn.textContent = state.videoWatched ? "Nochmal abspielen" : "Los geht's!";
+  }
+
+  function showPostVideoImage() {
+    els.video.classList.add("is-hidden-media");
+    els.postVideoImage.classList.remove("is-hidden");
+  }
+
+  function showVideo({ blurred = false } = {}) {
+    els.postVideoImage.classList.add("is-hidden");
+    els.video.classList.remove("is-hidden-media");
+    els.video.classList.toggle("is-obscured", blurred);
+  }
+
   function loadVideo(question) {
     els.video.pause();
     els.video.removeAttribute("src");
     els.video.load();
-    els.videoCover.classList.remove("is-hidden");
-    els.videoMissing.classList.add("is-hidden");
-    els.videoStatus.textContent = "bereit";
-    els.videoFilename.textContent = question.video;
-    els.missingCopy.textContent = `Lege ${question.video} direkt neben die index.html.`;
 
+    state.videoWatched = false;
+    state.videoMissing = false;
+    els.videoMissing.classList.add("is-hidden");
+    els.missingCopy.textContent = `Lege ${question.video} in den Unterordner files.`;
+
+    const images = config.postImages || [];
+    if (images.length) {
+      els.postVideoImage.src = images[state.currentIndex % images.length];
+    } else {
+      els.postVideoImage.removeAttribute("src");
+    }
+    els.postVideoImage.alt = `Bild nach Frage ${String(question.id).padStart(2, "0")}`;
+
+    showVideo({ blurred: true });
     els.video.src = question.video;
     els.video.load();
+    updateVideoActionButton();
+  }
+
+  async function playCurrentVideo() {
+    if (state.videoMissing) return;
+
+    if (state.videoWatched || els.video.ended) {
+      els.video.currentTime = 0;
+    }
+
+    showVideo({ blurred: false });
+
+    try {
+      await els.video.play();
+    } catch {
+      showVideo({ blurred: true });
+      els.videoActionBtn.disabled = false;
+      els.videoActionBtn.textContent = state.videoWatched ? "Nochmal abspielen" : "Los geht's!";
+    }
   }
 
   function renderQuestion() {
@@ -333,35 +400,48 @@
 
   els.continueBtn.addEventListener("click", goNext);
 
-  els.videoCover.addEventListener("click", async () => {
-    try {
-      await els.video.play();
-      els.videoCover.classList.add("is-hidden");
-      els.videoStatus.textContent = "läuft";
-    } catch {
-      // Der Browser kann die Wiedergabe blockieren; die nativen Controls bleiben verfügbar.
-    }
-  });
+  els.videoActionBtn.addEventListener("click", playCurrentVideo);
 
   els.video.addEventListener("play", () => {
-    els.videoCover.classList.add("is-hidden");
-    els.videoStatus.textContent = "läuft";
+    showVideo({ blurred: false });
+    updateVideoActionButton();
   });
+
+  els.video.addEventListener("timeupdate", updateVideoActionButton);
+  els.video.addEventListener("durationchange", updateVideoActionButton);
+
   els.video.addEventListener("pause", () => {
-    if (!els.video.ended && !els.video.error) els.videoStatus.textContent = "pausiert";
+    if (!els.video.ended && !state.videoMissing) {
+      showVideo({ blurred: true });
+    }
+    updateVideoActionButton();
   });
+
   els.video.addEventListener("ended", () => {
-    els.videoStatus.textContent = "angesehen";
+    state.videoWatched = true;
+    showPostVideoImage();
+    updateVideoActionButton();
   });
+
   els.video.addEventListener("error", () => {
+    state.videoMissing = true;
     els.videoMissing.classList.remove("is-hidden");
-    els.videoCover.classList.add("is-hidden");
-    els.videoStatus.textContent = "fehlt";
+    els.postVideoImage.classList.add("is-hidden");
+    els.video.classList.add("is-hidden-media");
+    updateVideoActionButton();
   });
+
   els.video.addEventListener("loadedmetadata", () => {
+    state.videoMissing = false;
     els.videoMissing.classList.add("is-hidden");
-    els.videoCover.classList.remove("is-hidden");
-    els.videoStatus.textContent = "bereit";
+    showVideo({ blurred: true });
+    updateVideoActionButton();
+  });
+
+  els.postVideoImage.addEventListener("error", () => {
+    // Falls ein Standbild noch fehlt, bleibt nach dem Video eine neutrale Fläche sichtbar.
+    els.postVideoImage.removeAttribute("src");
+    els.postVideoImage.alt = "Standbild noch nicht vorhanden";
   });
 
   buildBoard();

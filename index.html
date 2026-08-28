@@ -16,7 +16,6 @@
     <section class="screen intro-screen is-active" id="introScreen" aria-labelledby="introTitle">
       <div class="intro-card glass-card">
         <div class="intro-heading">
-          <p class="intro-prelude">Nochmal nachträglich:</p>
           <h1 id="introTitle">
             <span class="intro-wish">Alles Gute</span>
             <span class="intro-name">LEOPOLD</span>
@@ -67,20 +66,13 @@
       <div class="quiz-grid">
         <section class="video-card glass-card">
           <div class="video-stage" id="videoStage">
-            <video id="questionVideo" controls playsinline preload="metadata"></video>
-            <button class="video-cover" id="videoCover" type="button" aria-label="Video abspielen">
-              <span class="play-orb">▶</span>
-              <span>Video abspielen</span>
-            </button>
+            <video id="questionVideo" playsinline preload="metadata" disablepictureinpicture></video>
+            <img class="post-video-image is-hidden" id="postVideoImage" alt="Bild nach dem Video" />
             <div class="video-missing is-hidden" id="videoMissing">
               <span class="missing-icon">◇</span>
               <strong id="missingTitle">Video noch nicht vorhanden</strong>
-              <p id="missingCopy">Lege die passende MP4-Datei neben die index.html.</p>
+              <p id="missingCopy">Lege die passende MP4-Datei in den Unterordner files.</p>
             </div>
-          </div>
-          <div class="video-meta">
-            <span id="videoFilename">Frage01.mp4</span>
-            <span class="video-status" id="videoStatus">bereit</span>
           </div>
         </section>
 
@@ -91,6 +83,8 @@
             <p id="answerHint">Gib deine Antwort ein und bestätige mit Enter.</p>
           </div>
 
+          <button class="video-action-btn" id="videoActionBtn" type="button">Los geht's!</button>
+
           <form id="answerForm" autocomplete="off">
             <label class="sr-only" for="answerInput">Antwort</label>
             <div class="input-wrap">
@@ -99,7 +93,7 @@
             </div>
           </form>
 
-          <div class="attempts" id="attempts" aria-label="Verbleibende Versuche"></div>
+          <div class="attempts" id="attempts" aria-live="polite" aria-label="Übrige Versuche"></div>
           <div class="feedback" id="feedback" role="status"></div>
 
           <div class="reveal-box is-hidden" id="revealBox">

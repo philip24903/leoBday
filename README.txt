@@ -4,12 +4,14 @@ LEOPOLDS GEBURTSTAGSQUIZ
 START
 -----
 1. Entpacke den ZIP-Ordner.
-2. Lege alle Videos DIREKT in denselben Ordner wie index.html.
-3. Benenne sie so:
-   Frage01.mp4
-   Frage02.mp4
+2. Im Quiz-Ordner gibt es den Unterordner "files".
+3. Lege dort alle Videos und Bilder hinein:
+   files/Frage01.mp4
+   files/Frage02.mp4
    ...
-   Frage12.mp4
+   files/Frage12.mp4
+   files/Bild1.png
+   files/Bild2.png
 4. Öffne index.html im Browser.
 
 Es ist kein Server und keine Installation nötig.
@@ -20,7 +22,19 @@ index.html       Aufbau der Website
 styles.css       gesamtes Design
 app.js           Quiz-Logik, Versuche, Animationen, Video-Steuerung
 quiz-config.js   Fragen, Lösungen, Buchstaben und Dateinamen
+files/           alle Videos und Bilder
 README.txt       diese Anleitung
+
+VIDEO-ABLAUF
+-------------
+- Der Videoplayer selbst besitzt keinerlei sichtbare Steuerelemente.
+- Vor dem Start ist das Video extrem verschwommen.
+- Der Button rechts startet das Video mit "Los geht's!".
+- Während das Video läuft, ist der Button deaktiviert und zeigt die Restzeit an.
+- Nach dem vollständigen Abspielen erscheint anstelle des Videos ein Bild.
+- Der Button wird danach zu "Nochmal abspielen".
+- Bei erneutem Abspielen wird wieder das Video eingeblendet.
+- Bild1.png und Bild2.png werden aktuell abwechselnd verwendet.
 
 QUIZ-ABLAUF
 -----------
@@ -35,11 +49,6 @@ QUIZ-ABLAUF
 - Groß-/Kleinschreibung wird ignoriert.
 - Es wird KEIN Fortschritt gespeichert.
 - Nach der letzten Frage wird "CANIS AUREUS" als Geschenk enthüllt.
-
-VIDEOS
-------
-Die Videofläche ist für Handy-Hochformat (9:16) ausgelegt.
-Die Videos werden mit object-fit: contain angezeigt und deshalb nicht abgeschnitten.
 
 AKTUELL NOCH PROVISORISCH
 -------------------------

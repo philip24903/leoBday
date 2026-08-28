@@ -1,6 +1,6 @@
 /*
   Alle Quiz-Inhalte an einer Stelle.
-  Die 12 Videos liegen direkt neben index.html und heißen Frage01.mp4 bis Frage12.mp4.
+  Die 12 Videos liegen im Unterordner files und heißen Frage01.mp4 bis Frage12.mp4.
 
   Ablauf:
   - Frage 01 ergibt die Zahl 12.
@@ -17,11 +17,12 @@ window.QUIZ_CONFIG = {
   finalPhrase: "CANIS AUREUS",
   slots: ["C", "A", "N", "I", "S", " ", "A", "U", "R", "E", "U", "S"],
   giftedSlots: [5],
+  postImages: ["files/Bild1.png", "files/Bild2.png"],
 
   questions: [
     {
       id: 1,
-      video: "Frage01.mp4",
+      video: "files/Frage01.mp4",
       title: "Was ist die Lösung?",
       hint: "Die erste Antwort verrät dir, wie viele Zeichen du suchst.",
       answers: ["12", "zwölf", "zwoelf"],
@@ -31,7 +32,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 2,
-      video: "Frage02.mp4",
+      video: "files/Frage02.mp4",
       title: "Wie lautet das gesuchte Wort?",
       answers: ["Cumulonimbus"],
       displayAnswer: "Cumulonimbus",
@@ -40,7 +41,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 3,
-      video: "Frage03.mp4",
+      video: "files/Frage03.mp4",
       title: "Wie lautet das gesuchte Wort?",
       answers: ["Amor"],
       displayAnswer: "Amor",
@@ -49,7 +50,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 4,
-      video: "Frage04.mp4",
+      video: "files/Frage04.mp4",
       title: "Was ist die gesuchte Gemeinsamkeit?",
       hint: "Gib die vollständige Lösung aus dem Video ein.",
       answers: ["N"],
@@ -59,7 +60,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 5,
-      video: "Frage05.mp4",
+      video: "files/Frage05.mp4",
       title: "Wie lautet deine Lösung?",
       hint: "Mehrere Schreibweisen werden akzeptiert.",
       answers: ["9", "neun", "I"],
@@ -69,7 +70,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 6,
-      video: "Frage06.mp4",
+      video: "files/Frage06.mp4",
       title: "Wie lautet das gesuchte Wort?",
       answers: ["Spin"],
       displayAnswer: "Spin",
@@ -78,7 +79,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 7,
-      video: "Frage07.mp4",
+      video: "files/Frage07.mp4",
       title: "Welcher Name ist gesucht?",
       answers: ["Alia"],
       displayAnswer: "Alia",
@@ -87,7 +88,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 8,
-      video: "Frage08.mp4",
+      video: "files/Frage08.mp4",
       title: "Wie lautet das gesuchte Wort?",
       hint: "Diese Frage wird ergänzt, sobald Kims Rätsel feststeht.",
       answers: ["U"],
@@ -98,7 +99,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 9,
-      video: "Frage09.mp4",
+      video: "files/Frage09.mp4",
       title: "Welche physikalische Größe ist gesucht?",
       answers: ["Widerstand", "elektrischer Widerstand", "R"],
       displayAnswer: "Widerstand",
@@ -107,7 +108,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 10,
-      video: "Frage10.mp4",
+      video: "files/Frage10.mp4",
       title: "Welche Kulturepoche ist gesucht?",
       answers: ["Renaissance"],
       displayAnswer: "Renaissance",
@@ -116,7 +117,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 11,
-      video: "Frage11.mp4",
+      video: "files/Frage11.mp4",
       title: "Welches Wort bzw. Getränk ist gesucht?",
       answers: ["Ulmer Export", "Ur-Krostitzer", "Ur Krostitzer", "U"],
       displayAnswer: "Ulmer Export / Ur-Krostitzer",
@@ -125,7 +126,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 12,
-      video: "Frage12.mp4",
+      video: "files/Frage12.mp4",
       title: "Welcher Monat ist gesucht?",
       answers: ["September"],
       displayAnswer: "September",
