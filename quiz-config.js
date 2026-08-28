@@ -1,0 +1,140 @@
+/*
+  Alle Quiz-Inhalte an einer Stelle.
+  Die Videos liegen direkt neben index.html und heißen Frage00.mp4 bis Frage12.mp4.
+
+  WICHTIG:
+  - Frage 06 (Leerzeichen) ist aktuell eine provisorische Zwischenstation.
+  - Frage 08 (Kim / U) hat im gelieferten Quiz noch keinen vollständigen Fragetext.
+    Die vorläufig akzeptierte Antwort ist deshalb nur "U" und kann später hier geändert werden.
+*/
+
+window.QUIZ_CONFIG = {
+  finalPhrase: "CANIS AUREUS",
+  slots: ["C", "A", "N", "I", "S", " ", "A", "U", "R", "E", "U", "S"],
+
+  questions: [
+    {
+      id: 0,
+      video: "Frage00.mp4",
+      title: "Was ist die Lösung?",
+      hint: "Die erste Antwort verrät dir, wie viele Zeichen du suchst.",
+      answers: ["12", "zwölf", "zwoelf"],
+      displayAnswer: "12",
+      slotIndex: null,
+      letter: null
+    },
+    {
+      id: 1,
+      video: "Frage01.mp4",
+      title: "Wie lautet das gesuchte Wort?",
+      answers: ["Cumulonimbus"],
+      displayAnswer: "Cumulonimbus",
+      slotIndex: 0,
+      letter: "C"
+    },
+    {
+      id: 2,
+      video: "Frage02.mp4",
+      title: "Wie lautet das gesuchte Wort?",
+      answers: ["Amor"],
+      displayAnswer: "Amor",
+      slotIndex: 1,
+      letter: "A"
+    },
+    {
+      id: 3,
+      video: "Frage03.mp4",
+      title: "Was ist die gesuchte Gemeinsamkeit?",
+      hint: "Die Antwort aus der Vorlage ist der gesuchte Buchstabe.",
+      answers: ["N"],
+      displayAnswer: "N",
+      slotIndex: 2,
+      letter: "N"
+    },
+    {
+      id: 4,
+      video: "Frage04.mp4",
+      title: "Wie lautet deine Lösung?",
+      hint: "Mehrere Schreibweisen werden akzeptiert.",
+      answers: ["9", "neun", "I"],
+      displayAnswer: "9 → I",
+      slotIndex: 3,
+      letter: "I"
+    },
+    {
+      id: 5,
+      video: "Frage05.mp4",
+      title: "Wie lautet das gesuchte Wort?",
+      answers: ["Spin"],
+      displayAnswer: "Spin",
+      slotIndex: 4,
+      letter: "S"
+    },
+    {
+      id: 6,
+      video: "Frage06.mp4",
+      title: "Was gehört an diese Stelle?",
+      hint: "Gib das vollständige Lösungswort ein. Groß- und Kleinschreibung sind egal.",
+      answers: ["Leerzeichen", "Space"],
+      displayAnswer: "Leerzeichen",
+      slotIndex: 5,
+      letter: " "
+    },
+    {
+      id: 7,
+      video: "Frage07.mp4",
+      title: "Welcher Name ist gesucht?",
+      answers: ["Alia"],
+      displayAnswer: "Alia",
+      slotIndex: 6,
+      letter: "A"
+    },
+    {
+      id: 8,
+      video: "Frage08.mp4",
+      title: "Wie lautet das gesuchte Wort?",
+      hint: "Gib das vollständige Lösungswort ein. Groß- und Kleinschreibung sind egal.",
+      answers: ["U"],
+      displayAnswer: "U (vorläufig)",
+      slotIndex: 7,
+      letter: "U",
+      provisional: true
+    },
+    {
+      id: 9,
+      video: "Frage09.mp4",
+      title: "Welche physikalische Größe ist gesucht?",
+      answers: ["Widerstand", "elektrischer Widerstand", "R"],
+      displayAnswer: "Widerstand",
+      slotIndex: 8,
+      letter: "R"
+    },
+    {
+      id: 10,
+      video: "Frage10.mp4",
+      title: "Welche Kulturepoche ist gesucht?",
+      answers: ["Renaissance"],
+      displayAnswer: "Renaissance",
+      slotIndex: 9,
+      letter: "E"
+    },
+    {
+      id: 11,
+      video: "Frage11.mp4",
+      title: "Welches Wort bzw. Getränk ist gesucht?",
+      answers: ["Ulmer Export", "Ur-Krostitzer", "Ur Krostitzer", "U"],
+      displayAnswer: "Ulmer Export / Ur-Krostitzer",
+      slotIndex: 10,
+      letter: "U"
+    },
+    {
+      id: 12,
+      video: "Frage12.mp4",
+      title: "Welcher Monat ist gesucht?",
+      answers: ["September"],
+      displayAnswer: "September",
+      slotIndex: 11,
+      letter: "S"
+    }
+  ]
+};

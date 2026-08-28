@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b0b10" />
+  <title>Leopolds Geburtstagsquiz</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+  <div class="noise"></div>
+
+  <main class="app-shell" id="app">
+    <section class="screen intro-screen is-active" id="introScreen" aria-labelledby="introTitle">
+      <div class="intro-card glass-card">
+        <p class="eyebrow">Eine Geburtstagsüberraschung</p>
+        <h1 id="introTitle">Für Leopold.</h1>
+        <p class="intro-copy">
+          Vor dir liegen 13 Etappen. Die erste verrät dir, wonach du eigentlich suchst.
+          Danach zählt jede richtige Antwort.
+        </p>
+        <div class="intro-rules" aria-label="Spielregeln">
+          <div><span>13</span><small>Videos</small></div>
+          <div><span>3</span><small>Versuche je Frage</small></div>
+          <div><span>1</span><small>Geschenk</small></div>
+        </div>
+        <button class="primary-btn" id="startBtn" type="button">
+          <span>Quiz starten</span>
+          <span class="btn-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="screen quiz-screen" id="quizScreen" aria-live="polite">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Leopolds Geburtstagsquiz</p>
+          <h2 id="questionLabel">Frage 00</h2>
+        </div>
+        <div class="progress-wrap" aria-label="Fortschritt">
+          <div class="progress-copy"><span id="progressCurrent">01</span><span>/ 13</span></div>
+          <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+        </div>
+      </header>
+
+      <section class="solution-panel glass-card is-hidden" id="solutionPanel" aria-label="Lösungswort">
+        <div class="solution-heading">
+          <div>
+            <p class="eyebrow">Dein Lösungswort</p>
+            <h3>12 Zeichen. Eins nach dem anderen.</h3>
+          </div>
+          <div class="solved-count"><span id="solvedCount">0</span>/12</div>
+        </div>
+        <div class="letter-board" id="letterBoard" aria-label="12 Platzhalter für das Lösungswort"></div>
+      </section>
+
+      <div class="quiz-grid">
+        <section class="video-card glass-card">
+          <div class="video-stage" id="videoStage">
+            <video id="questionVideo" controls playsinline preload="metadata"></video>
+            <button class="video-cover" id="videoCover" type="button" aria-label="Video abspielen">
+              <span class="play-orb">▶</span>
+              <span>Video abspielen</span>
+            </button>
+            <div class="video-missing is-hidden" id="videoMissing">
+              <span class="missing-icon">◇</span>
+              <strong id="missingTitle">Video noch nicht vorhanden</strong>
+              <p id="missingCopy">Lege die passende MP4-Datei neben die index.html.</p>
+            </div>
+          </div>
+          <div class="video-meta">
+            <span id="videoFilename">Frage00.mp4</span>
+            <span class="video-status" id="videoStatus">bereit</span>
+          </div>
+        </section>
+
+        <section class="answer-card glass-card">
+          <div class="answer-head">
+            <p class="eyebrow" id="answerEyebrow">Deine Lösung</p>
+            <h3 id="answerTitle">Was ist die Lösung?</h3>
+            <p id="answerHint">Gib deine Antwort ein und bestätige mit Enter.</p>
+          </div>
+
+          <form id="answerForm" autocomplete="off">
+            <label class="sr-only" for="answerInput">Antwort</label>
+            <div class="input-wrap">
+              <input id="answerInput" type="text" inputmode="text" placeholder="Antwort eingeben …" spellcheck="false" />
+              <button class="submit-btn" id="submitBtn" type="submit" aria-label="Antwort prüfen">→</button>
+            </div>
+          </form>
+
+          <div class="attempts" id="attempts" aria-label="Verbleibende Versuche"></div>
+          <div class="feedback" id="feedback" role="status"></div>
+
+          <div class="reveal-box is-hidden" id="revealBox">
+            <p>Die richtige Lösung lautet:</p>
+            <strong id="revealedAnswer"></strong>
+          </div>
+
+          <button class="secondary-btn is-hidden" id="continueBtn" type="button">Weiter zur nächsten Frage</button>
+        </section>
+      </div>
+    </section>
+
+    <section class="screen finale-screen" id="finaleScreen" aria-labelledby="finaleTitle">
+      <div class="finale-card glass-card">
+        <div class="finale-glow"></div>
+        <p class="eyebrow">Geschafft, Leopold.</p>
+        <h2 id="finaleTitle">Dein Lösungswort ist dein Geschenk.</h2>
+        <div class="final-word" id="finalWord">CANIS AUREUS</div>
+        <p class="final-copy">Alles Gute zum Geburtstag.</p>
+        <button class="secondary-btn" id="restartBtn" type="button">Quiz noch einmal starten</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="flying-letter" id="flyingLetter" aria-hidden="true"></div>
+  <canvas id="confettiCanvas" class="confetti-canvas" aria-hidden="true"></canvas>
+
+  <script src="quiz-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
