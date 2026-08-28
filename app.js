@@ -190,7 +190,7 @@
     els.submitBtn.disabled = true;
 
     if (correct) {
-      els.feedback.textContent = question.id === 0
+      els.feedback.textContent = question.id === 1
         ? "Richtig. Jetzt weißt du, wie viele Zeichen dein Lösungswort hat."
         : "Richtig. Der nächste Buchstabe gehört dir.";
       els.feedback.className = "feedback success";
@@ -201,7 +201,8 @@
       els.revealBox.classList.remove("is-hidden");
     }
 
-    if (question.id === 0) {
+    if (question.id === 1) {
+      (config.giftedSlots || []).forEach(index => state.revealedSlots.add(index));
       els.solutionPanel.classList.remove("is-hidden");
       buildBoard();
     } else {

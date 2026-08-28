@@ -1,9 +1,14 @@
 /*
   Alle Quiz-Inhalte an einer Stelle.
-  Die Videos liegen direkt neben index.html und heißen Frage00.mp4 bis Frage12.mp4.
+  Die 12 Videos liegen direkt neben index.html und heißen Frage01.mp4 bis Frage12.mp4.
+
+  Ablauf:
+  - Frage 01 ergibt die Zahl 12.
+  - Danach erscheinen die 12 Stellen des Lösungsworts.
+  - Das Leerzeichen an Stelle 6 wird automatisch geschenkt.
+  - Die Fragen 02 bis 12 liefern die 11 Buchstaben.
 
   WICHTIG:
-  - Frage 06 (Leerzeichen) ist aktuell eine provisorische Zwischenstation.
   - Frage 08 (Kim / U) hat im gelieferten Quiz noch keinen vollständigen Fragetext.
     Die vorläufig akzeptierte Antwort ist deshalb nur "U" und kann später hier geändert werden.
 */
@@ -11,11 +16,12 @@
 window.QUIZ_CONFIG = {
   finalPhrase: "CANIS AUREUS",
   slots: ["C", "A", "N", "I", "S", " ", "A", "U", "R", "E", "U", "S"],
+  giftedSlots: [5],
 
   questions: [
     {
-      id: 0,
-      video: "Frage00.mp4",
+      id: 1,
+      video: "Frage01.mp4",
       title: "Was ist die Lösung?",
       hint: "Die erste Antwort verrät dir, wie viele Zeichen du suchst.",
       answers: ["12", "zwölf", "zwoelf"],
@@ -24,8 +30,8 @@ window.QUIZ_CONFIG = {
       letter: null
     },
     {
-      id: 1,
-      video: "Frage01.mp4",
+      id: 2,
+      video: "Frage02.mp4",
       title: "Wie lautet das gesuchte Wort?",
       answers: ["Cumulonimbus"],
       displayAnswer: "Cumulonimbus",
@@ -33,8 +39,8 @@ window.QUIZ_CONFIG = {
       letter: "C"
     },
     {
-      id: 2,
-      video: "Frage02.mp4",
+      id: 3,
+      video: "Frage03.mp4",
       title: "Wie lautet das gesuchte Wort?",
       answers: ["Amor"],
       displayAnswer: "Amor",
@@ -42,18 +48,18 @@ window.QUIZ_CONFIG = {
       letter: "A"
     },
     {
-      id: 3,
-      video: "Frage03.mp4",
+      id: 4,
+      video: "Frage04.mp4",
       title: "Was ist die gesuchte Gemeinsamkeit?",
-      hint: "Die Antwort aus der Vorlage ist der gesuchte Buchstabe.",
+      hint: "Gib die vollständige Lösung aus dem Video ein.",
       answers: ["N"],
       displayAnswer: "N",
       slotIndex: 2,
       letter: "N"
     },
     {
-      id: 4,
-      video: "Frage04.mp4",
+      id: 5,
+      video: "Frage05.mp4",
       title: "Wie lautet deine Lösung?",
       hint: "Mehrere Schreibweisen werden akzeptiert.",
       answers: ["9", "neun", "I"],
@@ -62,23 +68,13 @@ window.QUIZ_CONFIG = {
       letter: "I"
     },
     {
-      id: 5,
-      video: "Frage05.mp4",
+      id: 6,
+      video: "Frage06.mp4",
       title: "Wie lautet das gesuchte Wort?",
       answers: ["Spin"],
       displayAnswer: "Spin",
       slotIndex: 4,
       letter: "S"
-    },
-    {
-      id: 6,
-      video: "Frage06.mp4",
-      title: "Was gehört an diese Stelle?",
-      hint: "Gib das vollständige Lösungswort ein. Groß- und Kleinschreibung sind egal.",
-      answers: ["Leerzeichen", "Space"],
-      displayAnswer: "Leerzeichen",
-      slotIndex: 5,
-      letter: " "
     },
     {
       id: 7,
@@ -93,7 +89,7 @@ window.QUIZ_CONFIG = {
       id: 8,
       video: "Frage08.mp4",
       title: "Wie lautet das gesuchte Wort?",
-      hint: "Gib das vollständige Lösungswort ein. Groß- und Kleinschreibung sind egal.",
+      hint: "Diese Frage wird ergänzt, sobald Kims Rätsel feststeht.",
       answers: ["U"],
       displayAnswer: "U (vorläufig)",
       slotIndex: 7,

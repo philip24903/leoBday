@@ -15,21 +15,29 @@
   <main class="app-shell" id="app">
     <section class="screen intro-screen is-active" id="introScreen" aria-labelledby="introTitle">
       <div class="intro-card glass-card">
-        <p class="eyebrow">Eine Geburtstagsüberraschung</p>
-        <h1 id="introTitle">Für Leopold.</h1>
-        <p class="intro-copy">
-          Vor dir liegen 13 Etappen. Die erste verrät dir, wonach du eigentlich suchst.
-          Danach zählt jede richtige Antwort.
-        </p>
-        <div class="intro-rules" aria-label="Spielregeln">
-          <div><span>13</span><small>Videos</small></div>
-          <div><span>3</span><small>Versuche je Frage</small></div>
-          <div><span>1</span><small>Geschenk</small></div>
+        <div class="intro-heading">
+          <p class="intro-prelude">Nochmal nachträglich:</p>
+          <h1 id="introTitle">
+            <span class="intro-wish">Alles Gute</span>
+            <span class="intro-name">LEOPOLD</span>
+          </h1>
         </div>
-        <button class="primary-btn" id="startBtn" type="button">
-          <span>Quiz starten</span>
-          <span class="btn-arrow" aria-hidden="true">→</span>
-        </button>
+
+        <p class="intro-copy">
+          Um dir dein Geschenk zu verdienen musst du erst dieses kleine Quiz bestehen!
+        </p>
+
+        <div class="intro-rules" aria-label="Spielregeln">
+          <div><span>12</span><small>Fragen</small></div>
+          <div><span>3</span><small>Versuche je Frage</small></div>
+        </div>
+
+        <div class="intro-actions">
+          <button class="primary-btn" id="startBtn" type="button">
+            <span>Quiz starten</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -37,10 +45,10 @@
       <header class="topbar">
         <div>
           <p class="eyebrow">Leopolds Geburtstagsquiz</p>
-          <h2 id="questionLabel">Frage 00</h2>
+          <h2 id="questionLabel">Frage 01</h2>
         </div>
         <div class="progress-wrap" aria-label="Fortschritt">
-          <div class="progress-copy"><span id="progressCurrent">01</span><span>/ 13</span></div>
+          <div class="progress-copy"><span id="progressCurrent">01</span><span>/ 12</span></div>
           <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
         </div>
       </header>
@@ -49,7 +57,7 @@
         <div class="solution-heading">
           <div>
             <p class="eyebrow">Dein Lösungswort</p>
-            <h3>12 Zeichen. Eins nach dem anderen.</h3>
+            <h3>12 Zeichen. Das Leerzeichen bekommst du geschenkt.</h3>
           </div>
           <div class="solved-count"><span id="solvedCount">0</span>/12</div>
         </div>
@@ -71,7 +79,7 @@
             </div>
           </div>
           <div class="video-meta">
-            <span id="videoFilename">Frage00.mp4</span>
+            <span id="videoFilename">Frage01.mp4</span>
             <span class="video-status" id="videoStatus">bereit</span>
           </div>
         </section>
