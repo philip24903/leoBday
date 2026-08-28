@@ -28,6 +28,7 @@
     videoActionBtn: document.getElementById("videoActionBtn"),
     videoMissing: document.getElementById("videoMissing"),
     missingCopy: document.getElementById("missingCopy"),
+    answerEyebrow: document.getElementById("answerEyebrow"),
     answerTitle: document.getElementById("answerTitle"),
     answerHint: document.getElementById("answerHint"),
     answerForm: document.getElementById("answerForm"),
@@ -188,6 +189,7 @@
     els.questionLabel.textContent = `Frage ${ordinal}`;
     els.progressCurrent.textContent = String(state.currentIndex + 1).padStart(2, "0");
     els.progressBar.style.width = `${((state.currentIndex + 1) / questions.length) * 100}%`;
+    els.answerEyebrow.textContent = question.eyebrow || "Deine Lösung";
     els.answerTitle.textContent = question.title || "Wie lautet die Lösung?";
     els.answerHint.textContent = question.hint || "Gib das vollständige Lösungswort ein. Groß- und Kleinschreibung sind egal.";
 
@@ -305,9 +307,9 @@
     if (state.attemptsLeft <= 0) {
       resolveQuestion(false, true);
     } else {
-      const noun = state.attemptsLeft === 1 ? "Versuch" : "Versuche";
-      els.feedback.textContent = `Leider falsch. Noch ${state.attemptsLeft} ${noun}.`;
-      els.feedback.className = "feedback error";
+      // Die verbleibenden Versuche werden nur noch im Kreis angezeigt.
+      els.feedback.textContent = "";
+      els.feedback.className = "feedback";
       els.answerInput.select();
     }
   }
