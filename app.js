@@ -580,7 +580,7 @@
 
     els.questionLabel.textContent = `Frage ${ordinal}`;
     els.progressCurrent.textContent = pad2(state.currentIndex + 1);
-    els.progressTotal.textContent = String(questions.length);
+    els.progressTotal.textContent = state.currentIndex === 0 ? "X" : String(questions.length);
     els.progressBar.style.width = `${((state.currentIndex + 1) / questions.length) * 100}%`;
     els.answerEyebrow.textContent = question.eyebrow || "Deine Lösung";
     els.answerTitle.textContent = question.title || "Wie lautet die Lösung?";
@@ -658,6 +658,8 @@
         els.reactionOverlay.classList.add("is-hidden");
         els.reactionFallback.classList.add("is-hidden");
         els.reactionNextBtn.classList.add("is-hidden");
+        els.reactionNextBtn.classList.remove("is-ready");
+        els.reactionNextBtn.disabled = true;
         els.reactionNextBtn.onclick = null;
         resolve();
       }
@@ -665,6 +667,8 @@
       function showNextButton() {
         if (!waitsForNextClick || finished) return;
         els.reactionNextBtn.classList.remove("is-hidden");
+        els.reactionNextBtn.classList.add("is-ready");
+        els.reactionNextBtn.disabled = false;
         els.reactionNextBtn.focus({ preventScroll: true });
       }
 
@@ -672,7 +676,9 @@
       els.reactionLabel.className = `reaction-label ${kind === "correct" ? "is-correct" : "is-wrong"}`;
       els.reactionFallback.classList.add("is-hidden");
       els.reactionVideo.classList.remove("is-hidden");
-      els.reactionNextBtn.classList.add("is-hidden");
+      els.reactionNextBtn.classList.toggle("is-hidden", !waitsForNextClick);
+      els.reactionNextBtn.classList.remove("is-ready");
+      els.reactionNextBtn.disabled = true;
       els.reactionOverlay.classList.remove("is-hidden");
 
       els.reactionNextBtn.onclick = cleanupAndResolve;
@@ -890,8 +896,9 @@
     requestAnimationFrame(frame);
   }
 
-  els.questionCountIntro.textContent = String(questions.length);
-  els.progressTotal.textContent = String(questions.length);
+  // Die Gesamtzahl bleibt bis nach Frage 01 verborgen, damit die Einstiegsaufgabe nichts vorwegnimmt.
+  els.questionCountIntro.textContent = "X";
+  els.progressTotal.textContent = "X";
 
   els.startBtn.addEventListener("click", startQuiz);
 

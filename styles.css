@@ -1245,14 +1245,14 @@ video.is-hidden-media {
   display: inline-grid;
   place-items: center;
   align-self: center;
-  border: 1px solid rgba(242,215,156,.70);
+  border: 1px solid rgba(255,255,255,.12);
   border-radius: 50%;
-  color: #17130d;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  box-shadow: 0 18px 48px rgba(214,173,98,.25), 0 0 0 5px rgba(214,173,98,.06);
-  cursor: pointer;
-  animation: reactionNextPulse 1.45s ease-in-out infinite;
-  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+  color: rgba(255,255,255,.34);
+  background: rgba(255,255,255,.055);
+  box-shadow: 0 12px 32px rgba(0,0,0,.24);
+  cursor: not-allowed;
+  opacity: .72;
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease, opacity .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
 }
 
 .reaction-next-btn span {
@@ -1263,7 +1263,17 @@ video.is-hidden-media {
   transform: translateX(1px) translateY(-1px);
 }
 
-.reaction-next-btn:hover {
+.reaction-next-btn.is-ready:not(:disabled) {
+  border-color: rgba(242,215,156,.70);
+  color: #17130d;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  box-shadow: 0 18px 48px rgba(214,173,98,.25), 0 0 0 5px rgba(214,173,98,.06);
+  cursor: pointer;
+  opacity: 1;
+  animation: reactionNextPulse 1.45s ease-in-out infinite;
+}
+
+.reaction-next-btn.is-ready:not(:disabled):hover {
   transform: translateX(4px) scale(1.06);
   box-shadow: 0 22px 60px rgba(214,173,98,.34), 0 0 0 6px rgba(214,173,98,.09);
   filter: brightness(1.05);
@@ -1272,6 +1282,10 @@ video.is-hidden-media {
 .reaction-next-btn:focus-visible {
   outline: 2px solid var(--gold-light);
   outline-offset: 5px;
+}
+
+.reaction-next-btn:disabled {
+  pointer-events: none;
 }
 
 .reaction-next-btn.is-hidden {
