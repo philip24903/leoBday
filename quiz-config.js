@@ -1,30 +1,48 @@
 /*
-  Alle Quiz-Inhalte an einer Stelle.
-  Die 12 Videos liegen im Unterordner files und heißen Frage01.mp4 bis Frage12.mp4.
+  Zentrale Konfiguration für Leopolds Quiz.
+
+  Ordnerstruktur unter "files":
+    files/Intro/01.mp4 ... 03.mp4
+    files/Fragen/01.mp4 ... 13.mp4
+    files/Richtig/01.mp4 ... 13.mp4
+    files/Falsch/01.mp4 ... 13.mp4
 
   Ablauf:
+  - Vor dem eigentlichen Rätsel werden die drei Intro-/Moderationsvideos abgespielt.
   - Frage 01 ergibt die Zahl 12.
-  - Danach erscheinen die 12 Stellen des Lösungsworts.
-  - Das Leerzeichen an Stelle 6 wird automatisch geschenkt.
-  - Die Fragen 02 bis 12 liefern die 11 Buchstaben.
+  - Danach erscheinen 12 Platzhalter für "CANIS AUREUS".
+  - Die Fragen 02 bis 13 liefern alle 12 Zeichen – inklusive Leerzeichen.
 
-  Die Texte in "eyebrow" stehen rechts über der jeweiligen Frage und können frei angepasst werden.
-
-  WICHTIG:
-  - Frage 08 (Kim / U) hat im gelieferten Quiz noch keinen vollständigen Fragetext.
-    Die vorläufig akzeptierte Antwort ist deshalb nur "U" und kann später hier geändert werden.
+  Die Texte "eyebrow", "title" und "hint" können pro Frage frei angepasst werden.
 */
 
 window.QUIZ_CONFIG = {
   finalPhrase: "CANIS AUREUS",
   slots: ["C", "A", "N", "I", "S", " ", "A", "U", "R", "E", "U", "S"],
-  giftedSlots: [5],
-  postImages: ["files/bild01.png", "files/bild02.png"],
+
+  media: {
+    introVideos: [
+      "files/Intro/01.mp4",
+      "files/Intro/02.mp4",
+      "files/Intro/03.mp4"
+    ],
+    questionsDirectory: "files/Fragen",
+    correctDirectory: "files/Richtig",
+    wrongDirectory: "files/Falsch",
+    postImages: ["files/bild01.png", "files/bild02.png"]
+  },
+
+  moderatorOptions: [
+    { label: "Johannes / Martin", preferred: true },
+    { label: "Günther Jauch" },
+    { label: "Stefan Raab" },
+    { label: "Thomas Gottschalk" },
+    { label: "Leopold selbst" }
+  ],
 
   questions: [
     {
       id: 1,
-      video: "files/Frage01.mp4",
       eyebrow: "Dein Einstieg",
       title: "Was ist die Lösung?",
       hint: "Die erste Antwort verrät dir, wie viele Zeichen du suchst.",
@@ -35,9 +53,9 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 2,
-      video: "files/Frage02.mp4",
       eyebrow: "Wetterwissen",
       title: "Wie lautet das gesuchte Wort?",
+      hint: "Gib das vollständige Lösungswort aus dem Video ein.",
       answers: ["Cumulonimbus"],
       displayAnswer: "Cumulonimbus",
       slotIndex: 0,
@@ -45,9 +63,9 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 3,
-      video: "files/Frage03.mp4",
       eyebrow: "Werwölfe",
       title: "Wie lautet das gesuchte Wort?",
+      hint: "Gib das vollständige Lösungswort aus dem Video ein.",
       answers: ["Amor"],
       displayAnswer: "Amor",
       slotIndex: 1,
@@ -55,7 +73,6 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 4,
-      video: "files/Frage04.mp4",
       eyebrow: "Gemeinsamkeit gesucht",
       title: "Was ist die gesuchte Gemeinsamkeit?",
       hint: "Gib die vollständige Lösung aus dem Video ein.",
@@ -66,7 +83,6 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 5,
-      video: "files/Frage05.mp4",
       eyebrow: "Um die Ecke gedacht",
       title: "Wie lautet deine Lösung?",
       hint: "Mehrere Schreibweisen werden akzeptiert.",
@@ -77,9 +93,9 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 6,
-      video: "files/Frage06.mp4",
       eyebrow: "Sport & Physik",
       title: "Wie lautet das gesuchte Wort?",
+      hint: "Gib das vollständige Lösungswort aus dem Video ein.",
       answers: ["Spin"],
       displayAnswer: "Spin",
       slotIndex: 4,
@@ -87,20 +103,30 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 7,
-      video: "files/Frage07.mp4",
+      eyebrow: "Eine kleine Lücke",
+      title: "Was gehört an diese Stelle?",
+      hint: "Auch ein Leerzeichen ist ein Zeichen.",
+      answers: ["Leerzeichen", "Leerstelle", "Space"],
+      displayAnswer: "Leerzeichen",
+      slotIndex: 5,
+      letter: " ",
+      provisional: true
+    },
+    {
+      id: 8,
       eyebrow: "Ein Name gesucht",
       title: "Welcher Name ist gesucht?",
+      hint: "Gib den vollständigen Namen aus dem Video ein.",
       answers: ["Alia"],
       displayAnswer: "Alia",
       slotIndex: 6,
       letter: "A"
     },
     {
-      id: 8,
-      video: "files/Frage08.mp4",
+      id: 9,
       eyebrow: "Kims Rätsel",
       title: "Wie lautet das gesuchte Wort?",
-      hint: "Diese Frage wird ergänzt, sobald Kims Rätsel feststeht.",
+      hint: "Diese Frage kann später in der Konfiguration ergänzt werden.",
       answers: ["U"],
       displayAnswer: "U (vorläufig)",
       slotIndex: 7,
@@ -108,40 +134,40 @@ window.QUIZ_CONFIG = {
       provisional: true
     },
     {
-      id: 9,
-      video: "files/Frage09.mp4",
+      id: 10,
       eyebrow: "Physik",
       title: "Welche physikalische Größe ist gesucht?",
+      hint: "Gib die vollständige Lösung oder das passende Formelzeichen ein.",
       answers: ["Widerstand", "elektrischer Widerstand", "R"],
       displayAnswer: "Widerstand",
       slotIndex: 8,
       letter: "R"
     },
     {
-      id: 10,
-      video: "files/Frage10.mp4",
+      id: 11,
       eyebrow: "Schmalkalden",
       title: "Welche Kulturepoche ist gesucht?",
+      hint: "Gib die vollständige Kulturepoche ein.",
       answers: ["Renaissance"],
       displayAnswer: "Renaissance",
       slotIndex: 9,
       letter: "E"
     },
     {
-      id: 11,
-      video: "files/Frage11.mp4",
+      id: 12,
       eyebrow: "Eine kleine Pause",
       title: "Welches Wort bzw. Getränk ist gesucht?",
+      hint: "Mehrere passende Antworten werden akzeptiert.",
       answers: ["Ulmer Export", "Ur-Krostitzer", "Ur Krostitzer", "U"],
       displayAnswer: "Ulmer Export / Ur-Krostitzer",
       slotIndex: 10,
       letter: "U"
     },
     {
-      id: 12,
-      video: "files/Frage12.mp4",
+      id: 13,
       eyebrow: "Letzte Frage",
       title: "Welcher Monat ist gesucht?",
+      hint: "Gib den vollständigen Monat ein.",
       answers: ["September"],
       displayAnswer: "September",
       slotIndex: 11,

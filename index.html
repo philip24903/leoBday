@@ -13,7 +13,38 @@
   <div class="noise"></div>
 
   <main class="app-shell" id="app">
-    <section class="screen intro-screen is-active" id="introScreen" aria-labelledby="introTitle">
+    <section class="screen moderator-screen is-active" id="moderatorScreen" aria-labelledby="moderatorTitle">
+      <div class="moderator-card glass-card">
+        <p class="eyebrow">Eine wichtige Entscheidung vorab</p>
+        <h1 id="moderatorTitle">Wer soll dich heute durch das Quiz moderieren?</h1>
+        <p class="moderator-copy">Wähle mit Bedacht. Manche Optionen sind offenbar weniger motiviert als andere.</p>
+
+        <div class="moderator-grid" id="moderatorGrid" aria-label="Moderation auswählen"></div>
+        <p class="moderator-footnote">Kleiner Hinweis: Eine Option wirkt wirklich verdächtig passend.</p>
+      </div>
+    </section>
+
+    <section class="screen intro-video-screen" id="introVideoScreen" aria-labelledby="introVideoTitle">
+      <div class="intro-video-shell">
+        <div class="intro-video-topline">
+          <div>
+            <p class="eyebrow">Deine gewählte Moderation</p>
+            <h2 id="introVideoTitle">Johannes / Martin</h2>
+          </div>
+          <div class="intro-video-progress"><span id="introVideoCurrent">1</span> / <span id="introVideoTotal">3</span></div>
+        </div>
+
+        <div class="intro-video-frame glass-card">
+          <video id="introVideo" playsinline preload="auto" disablepictureinpicture></video>
+          <div class="intro-video-fallback is-hidden" id="introVideoFallback">
+            <p>Das Video konnte nicht automatisch gestartet werden.</p>
+            <button class="primary-btn compact" id="introVideoPlayBtn" type="button">Video starten</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen intro-screen" id="introScreen" aria-labelledby="introTitle">
       <div class="intro-card glass-card">
         <div class="intro-heading">
           <h1 id="introTitle">
@@ -27,7 +58,7 @@
         </p>
 
         <div class="intro-rules" aria-label="Spielregeln">
-          <div><span>12</span><small>Fragen</small></div>
+          <div><span id="questionCountIntro">13</span><small>Fragen</small></div>
           <div><span>3</span><small>Versuche je Frage</small></div>
         </div>
 
@@ -47,7 +78,7 @@
           <h2 id="questionLabel">Frage 01</h2>
         </div>
         <div class="progress-wrap" aria-label="Fortschritt">
-          <div class="progress-copy"><span id="progressCurrent">01</span><span>/ 12</span></div>
+          <div class="progress-copy"><span id="progressCurrent">01</span><span>/ <span id="progressTotal">13</span></span></div>
           <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
         </div>
       </header>
@@ -56,7 +87,7 @@
         <div class="solution-heading">
           <div>
             <p class="eyebrow">Dein Lösungswort</p>
-            <h3>12 Zeichen. Das Leerzeichen bekommst du geschenkt.</h3>
+            <h3>12 Zeichen. Sammle sie Stück für Stück.</h3>
           </div>
           <div class="solved-count"><span id="solvedCount">0</span>/12</div>
         </div>
@@ -66,12 +97,12 @@
       <div class="quiz-grid">
         <section class="video-card glass-card">
           <div class="video-stage" id="videoStage">
-            <video id="questionVideo" playsinline preload="metadata" disablepictureinpicture></video>
+            <video class="question-video" id="questionVideo" playsinline preload="metadata" disablepictureinpicture></video>
             <img class="post-video-image is-hidden" id="postVideoImage" alt="Bild nach dem Video" />
             <div class="video-missing is-hidden" id="videoMissing">
               <span class="missing-icon">◇</span>
               <strong id="missingTitle">Video noch nicht vorhanden</strong>
-              <p id="missingCopy">Lege die passende MP4-Datei in den Unterordner files.</p>
+              <p id="missingCopy">Lege die passende MP4-Datei in den Unterordner files/Fragen.</p>
             </div>
           </div>
         </section>
@@ -94,7 +125,6 @@
           </form>
 
           <div class="attempts" id="attempts" aria-live="polite" aria-label="Übrige Versuche"></div>
-          <div class="feedback" id="feedback" role="status"></div>
 
           <div class="reveal-box is-hidden" id="revealBox">
             <p>Die richtige Lösung lautet:</p>
@@ -118,6 +148,20 @@
     </section>
   </main>
 
+  <div class="reaction-overlay is-hidden" id="reactionOverlay" aria-live="polite">
+    <div class="reaction-card">
+      <div class="reaction-label" id="reactionLabel">Richtig</div>
+      <div class="reaction-frame">
+        <video id="reactionVideo" playsinline preload="auto" disablepictureinpicture></video>
+        <div class="reaction-fallback is-hidden" id="reactionFallback">
+          <p id="reactionFallbackText">Das Reaktionsvideo konnte nicht gestartet werden.</p>
+          <button class="secondary-btn" id="reactionFallbackBtn" type="button">Weiter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast is-hidden" id="toast" role="status" aria-live="assertive"></div>
   <div class="flying-letter" id="flyingLetter" aria-hidden="true"></div>
   <canvas id="confettiCanvas" class="confetti-canvas" aria-hidden="true"></canvas>
 
