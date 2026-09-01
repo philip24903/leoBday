@@ -10,7 +10,10 @@
     revealedSlots: new Set(),
     videoWatched: false,
     videoMissing: false,
-    introIndex: 0
+    introIndex: 0,
+    questionVideoPaths: [],
+    currentVideoPart: 0,
+    betweenQuestionVideos: false
   };
 
   const els = {
@@ -103,6 +106,8 @@
     }, duration);
   }
 
+  let moderatorSwapLocked = false;
+
   function buildModeratorOptions() {
     els.moderatorGrid.innerHTML = "";
 
@@ -115,18 +120,24 @@
 
       if (option.preferred) {
         button.innerHTML = `
-          <span class="moderator-badge">OFFIZIELLE EMPFEHLUNG</span>
+          <span class="moderator-badge">EMPFOHLEN</span>
           <strong>${option.label}</strong>
-          <span class="moderator-select-copy">Diese Moderation auswählen →</span>
+          <span class="moderator-select-copy">Auswählen →</span>
         `;
         button.addEventListener("click", startIntroSequence);
       } else {
-        button.innerHTML = `<strong>${option.label}</strong><span>Auswählen</span>`;
-        button.addEventListener("pointerenter", () => evadeModeratorButton(button));
+        button.innerHTML = `
+          <span class="moderator-badge moderator-badge-placeholder" aria-hidden="true">&nbsp;</span>
+          <strong>${option.label}</strong>
+          <span class="moderator-select-copy">Auswählen</span>
+        `;
+        button.addEventListener("pointerenter", event => {
+          if (event.pointerType !== "touch") swapPreferredModeratorWith(button);
+        });
         button.addEventListener("click", event => {
           event.preventDefault();
-          evadeModeratorButton(button);
-          showToast("Der Moderator hat sich gerade noch rechtzeitig aus dem Staub gemacht.");
+          event.stopPropagation();
+          swapPreferredModeratorWith(button);
         });
       }
 
@@ -134,38 +145,72 @@
     });
   }
 
-  function evadeModeratorButton(button) {
-    const now = performance.now();
-    const last = Number(button.dataset.lastEvade || 0);
-    if (now - last < 420) return;
-    button.dataset.lastEvade = String(now);
+  function swapPreferredModeratorWith(decoy) {
+    if (!decoy || !decoy.classList.contains("is-decoy")) return;
+    if (moderatorSwapLocked) return;
 
-    const decoys = [...els.moderatorGrid.querySelectorAll(".is-decoy")];
-    const others = decoys.filter(item => item !== button);
-    if (!others.length) return;
+    const preferred = els.moderatorGrid.querySelector(".is-preferred");
+    if (!preferred || preferred === decoy) return;
 
-    const other = others[Math.floor(Math.random() * others.length)];
-    const buttonOrder = button.style.order;
-    button.style.order = other.style.order;
-    other.style.order = buttonOrder;
+    const buttons = [...els.moderatorGrid.querySelectorAll(".moderator-option")];
+    const firstRects = new Map(buttons.map(button => [button, button.getBoundingClientRect()]));
+    const preferredOrder = preferred.style.order;
 
-    button.classList.remove("is-evading");
-    void button.offsetWidth;
-    button.classList.add("is-evading");
-    window.setTimeout(() => button.classList.remove("is-evading"), 360);
+    preferred.style.order = decoy.style.order;
+    decoy.style.order = preferredOrder;
+
+    const lastRects = new Map(buttons.map(button => [button, button.getBoundingClientRect()]));
+    moderatorSwapLocked = true;
+
+    buttons.forEach(button => {
+      const first = firstRects.get(button);
+      const last = lastRects.get(button);
+      const deltaX = first.left - last.left;
+      const deltaY = first.top - last.top;
+
+      if (Math.abs(deltaX) < 1 && Math.abs(deltaY) < 1) return;
+
+      button.animate(
+        [
+          { transform: `translate(${deltaX}px, ${deltaY}px)`, offset: 0 },
+          { transform: "translate(0, 0)", offset: 1 }
+        ],
+        {
+          duration: 520,
+          easing: "cubic-bezier(.18,.82,.22,1)",
+          fill: "none"
+        }
+      );
+    });
+
+    preferred.classList.add("is-jumping");
+    window.setTimeout(() => {
+      preferred.classList.remove("is-jumping");
+      moderatorSwapLocked = false;
+    }, 540);
   }
 
   els.moderatorGrid.addEventListener("pointermove", event => {
-    if (event.pointerType === "touch") return;
+    if (event.pointerType === "touch" || moderatorSwapLocked) return;
 
-    const threshold = 72;
-    [...els.moderatorGrid.querySelectorAll(".is-decoy")].forEach(button => {
+    const decoys = [...els.moderatorGrid.querySelectorAll(".is-decoy")];
+    let nearest = null;
+    let nearestDistance = Infinity;
+
+    decoys.forEach(button => {
       const rect = button.getBoundingClientRect();
       const dx = Math.max(rect.left - event.clientX, 0, event.clientX - rect.right);
       const dy = Math.max(rect.top - event.clientY, 0, event.clientY - rect.bottom);
       const distance = Math.hypot(dx, dy);
-      if (distance < threshold) evadeModeratorButton(button);
+      if (distance < nearestDistance) {
+        nearest = button;
+        nearestDistance = distance;
+      }
     });
+
+    if (nearest && nearestDistance < 34) {
+      swapPreferredModeratorWith(nearest);
+    }
   });
 
   function startIntroSequence() {
@@ -289,6 +334,12 @@
   function updateVideoActionButton() {
     els.videoActionBtn.classList.toggle("is-missing", state.videoMissing);
 
+    if (state.betweenQuestionVideos) {
+      els.videoActionBtn.disabled = true;
+      els.videoActionBtn.textContent = "Gleich geht's weiter …";
+      return;
+    }
+
     if (state.videoMissing) {
       els.videoActionBtn.disabled = true;
       els.videoActionBtn.textContent = "Video fehlt";
@@ -321,8 +372,33 @@
     els.video.classList.toggle("is-obscured", blurred);
   }
 
-  function questionVideoPath(question) {
-    return `${config.media.questionsDirectory}/${pad2(question.id)}.mp4`;
+  function questionVideoPaths(question) {
+    const files = Array.isArray(question.videoFiles) && question.videoFiles.length
+      ? question.videoFiles
+      : [`${pad2(question.id)}.mp4`];
+
+    return files.map(file => `${config.media.questionsDirectory}/${file}`);
+  }
+
+  function currentQuestionVideoFilename() {
+    const path = state.questionVideoPaths[state.currentVideoPart] || "";
+    return path.split("/").pop() || `${pad2(questions[state.currentIndex].id)}.mp4`;
+  }
+
+  function setQuestionVideoSource(partIndex) {
+    state.currentVideoPart = partIndex;
+    state.videoMissing = false;
+    els.videoMissing.classList.add("is-hidden");
+
+    els.video.pause();
+    els.video.removeAttribute("src");
+    els.video.load();
+
+    const src = state.questionVideoPaths[partIndex];
+    const filename = currentQuestionVideoFilename();
+    els.missingCopy.textContent = `Lege ${filename} in files/Fragen.`;
+    els.video.src = src;
+    els.video.load();
   }
 
   function reactionVideoPath(kind, question) {
@@ -333,16 +409,14 @@
   }
 
   function loadQuestionVideo(question) {
-    els.video.pause();
-    els.video.removeAttribute("src");
-    els.video.load();
-
     state.videoWatched = false;
     state.videoMissing = false;
+    state.betweenQuestionVideos = false;
+    state.questionVideoPaths = questionVideoPaths(question);
+    state.currentVideoPart = 0;
+    els.video.style.opacity = "";
+    els.video.parentElement.style.background = "";
     els.videoMissing.classList.add("is-hidden");
-
-    const src = questionVideoPath(question);
-    els.missingCopy.textContent = `Lege ${pad2(question.id)}.mp4 in files/Fragen.`;
 
     const images = config.media.postImages || [];
     if (images.length) {
@@ -353,18 +427,22 @@
     els.postVideoImage.alt = `Bild nach Frage ${pad2(question.id)}`;
 
     showQuestionVideo({ blurred: true });
-    els.video.src = src;
-    els.video.load();
+    setQuestionVideoSource(0);
     updateVideoActionButton();
   }
 
   async function playCurrentVideo() {
-    if (state.videoMissing) return;
+    if (state.videoMissing || state.betweenQuestionVideos) return;
 
-    if (state.videoWatched || els.video.ended) {
+    if (state.videoWatched) {
+      state.videoWatched = false;
+      setQuestionVideoSource(0);
+    } else if (els.video.ended) {
       els.video.currentTime = 0;
     }
 
+    els.video.style.opacity = "";
+    els.video.parentElement.style.background = "";
     showQuestionVideo({ blurred: false });
 
     try {
@@ -374,6 +452,39 @@
       els.videoActionBtn.disabled = false;
       els.videoActionBtn.textContent = state.videoWatched ? "Nochmal abspielen" : "Los geht's!";
     }
+  }
+
+  async function advanceQuestionVideoPart() {
+    if (state.currentVideoPart >= state.questionVideoPaths.length - 1) return false;
+
+    state.betweenQuestionVideos = true;
+    updateVideoActionButton();
+
+    // Eine Sekunde echte Schwarzblende zwischen Einstieg und eigentlicher Frage.
+    els.video.style.opacity = "0";
+    els.video.parentElement.style.background = "#000";
+    await new Promise(resolve => window.setTimeout(resolve, 1000));
+
+    setQuestionVideoSource(state.currentVideoPart + 1);
+
+    try {
+      await els.video.play();
+      els.video.parentElement.style.background = "";
+      requestAnimationFrame(() => {
+        els.video.style.opacity = "1";
+      });
+    } catch {
+      els.video.style.opacity = "";
+      els.video.parentElement.style.background = "";
+      showQuestionVideo({ blurred: true });
+      els.videoActionBtn.disabled = false;
+      els.videoActionBtn.textContent = "Video starten";
+    } finally {
+      state.betweenQuestionVideos = false;
+      updateVideoActionButton();
+    }
+
+    return true;
   }
 
   function renderQuestion() {
@@ -666,20 +777,30 @@
   els.video.addEventListener("durationchange", updateVideoActionButton);
 
   els.video.addEventListener("pause", () => {
-    if (!els.video.ended && !state.videoMissing) {
+    if (!els.video.ended && !state.videoMissing && !state.betweenQuestionVideos) {
       showQuestionVideo({ blurred: true });
     }
     updateVideoActionButton();
   });
 
-  els.video.addEventListener("ended", () => {
+  els.video.addEventListener("ended", async () => {
+    if (state.currentVideoPart < state.questionVideoPaths.length - 1) {
+      await advanceQuestionVideoPart();
+      return;
+    }
+
     state.videoWatched = true;
+    els.video.style.opacity = "";
+    els.video.parentElement.style.background = "";
     showPostVideoImage();
     updateVideoActionButton();
   });
 
   els.video.addEventListener("error", () => {
     state.videoMissing = true;
+    state.betweenQuestionVideos = false;
+    els.video.style.opacity = "";
+    els.video.parentElement.style.background = "";
     els.videoMissing.classList.remove("is-hidden");
     els.postVideoImage.classList.add("is-hidden");
     els.video.classList.add("is-hidden-media");

@@ -4,6 +4,7 @@
   Ordnerstruktur unter "files":
     files/Intro/01.mp4 ... 03.mp4
     files/Fragen/01.mp4 ... 13.mp4
+    Ausnahme Frage 08: files/Fragen/08-1.mp4 und 08-2.mp4
     files/Richtig/01.mp4 ... 13.mp4
     files/Falsch/01.mp4 ... 13.mp4
 
@@ -36,8 +37,7 @@ window.QUIZ_CONFIG = {
     { label: "Johannes / Martin", preferred: true },
     { label: "Günther Jauch" },
     { label: "Stefan Raab" },
-    { label: "Thomas Gottschalk" },
-    { label: "Leopold selbst" }
+    { label: "Thomas Gottschalk" }
   ],
 
   questions: [
@@ -114,6 +114,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 8,
+      videoFiles: ["08-1.mp4", "08-2.mp4"],
       eyebrow: "Ein Name gesucht",
       title: "Welcher Name ist gesucht?",
       hint: "Gib den vollständigen Namen aus dem Video ein.",
