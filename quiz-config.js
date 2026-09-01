@@ -1,5 +1,5 @@
 /*
-  Zentrale Konfiguration für Leopolds Quiz.
+  Zentrale Konfiguration für Leopolds Geburtstagsüberraschung.
 
   Ordnerstruktur unter "files":
     files/Intro/01.mp4 ... 03.mp4
@@ -9,7 +9,7 @@
     files/Falsch/01.mp4 ... 13.mp4
 
   Ablauf:
-  - Vor dem eigentlichen Rätsel werden die drei Intro-/Moderationsvideos abgespielt.
+  - Zuerst läuft die Moderation über die drei Intro-Videos.
   - Frage 01 ergibt die Zahl 12.
   - Danach erscheinen 12 Platzhalter für "CANIS AUREUS".
   - Die Fragen 02 bis 13 liefern alle 12 Zeichen – inklusive Leerzeichen.
@@ -43,9 +43,9 @@ window.QUIZ_CONFIG = {
   questions: [
     {
       id: 1,
-      eyebrow: "Dein Einstieg",
-      title: "Was ist die Lösung?",
-      hint: "Die erste Antwort verrät dir, wie viele Zeichen du suchst.",
+      eyebrow: "Zum Warmwerden",
+      title: "Welche Zahl ist gesucht?",
+      hint: "Gib nur das Ergebnis ein. Es verrät dir gleich, wie viele Zeichen dein Lösungswort hat.",
       answers: ["12", "zwölf", "zwoelf"],
       displayAnswer: "12",
       slotIndex: null,
@@ -53,9 +53,9 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 2,
-      eyebrow: "Wetterwissen",
-      title: "Wie lautet das gesuchte Wort?",
-      hint: "Gib das vollständige Lösungswort aus dem Video ein.",
+      eyebrow: "Wetterexperte gefragt",
+      title: "Welches Lösungswort ist gesucht?",
+      hint: "Gib den vollständigen Namen der Wolke ein. Ist er richtig, landet automatisch der erste Buchstabe im Lösungswort.",
       answers: ["Cumulonimbus"],
       displayAnswer: "Cumulonimbus",
       slotIndex: 0,
@@ -63,19 +63,19 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 3,
-      eyebrow: "Werwölfe",
-      title: "Wie lautet das gesuchte Wort?",
-      hint: "Gib das vollständige Lösungswort aus dem Video ein.",
-      answers: ["Amor"],
-      displayAnswer: "Amor",
+      eyebrow: "K1 lässt grüßen",
+      title: "Welcher Name ist gesucht?",
+      hint: "Gib den vollständigen Namen ein. Ist er richtig, wird automatisch der passende Anfangsbuchstabe übernommen.",
+      answers: ["Alia"],
+      displayAnswer: "Alia",
       slotIndex: 1,
       letter: "A"
     },
     {
       id: 4,
-      eyebrow: "Gemeinsamkeit gesucht",
-      title: "Was ist die gesuchte Gemeinsamkeit?",
-      hint: "Gib die vollständige Lösung aus dem Video ein.",
+      eyebrow: "Latein verbindet",
+      title: "Welcher Buchstabe ist gesucht?",
+      hint: "Denk an die gemeinsame Besonderheit der genannten Lehrkräfte. Hier reicht der gesuchte Buchstabe.",
       answers: ["N"],
       displayAnswer: "N",
       slotIndex: 2,
@@ -83,19 +83,19 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 5,
-      eyebrow: "Um die Ecke gedacht",
-      title: "Wie lautet deine Lösung?",
-      hint: "Mehrere Schreibweisen werden akzeptiert.",
-      answers: ["9", "neun", "I"],
-      displayAnswer: "9 → I",
+      eyebrow: "Eine Ebene höher",
+      title: "Welche Zahl ist gesucht?",
+      hint: "Gib die gemeinsame Zahl ein. Ist sie richtig, wandelt das Quiz sie automatisch in den passenden Buchstaben um.",
+      answers: ["9", "neun"],
+      displayAnswer: "9",
       slotIndex: 3,
       letter: "I"
     },
     {
       id: 6,
-      eyebrow: "Sport & Physik",
-      title: "Wie lautet das gesuchte Wort?",
-      hint: "Gib das vollständige Lösungswort aus dem Video ein.",
+      eyebrow: "Sport trifft Physik",
+      title: "Welches Lösungswort ist gesucht?",
+      hint: "Gib das ganze Wort ein. Ist es richtig, wird automatisch der erste Buchstabe übernommen.",
       answers: ["Spin"],
       displayAnswer: "Spin",
       slotIndex: 4,
@@ -103,52 +103,50 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 7,
-      eyebrow: "Eine kleine Lücke",
-      title: "Was gehört an diese Stelle?",
-      hint: "Auch ein Leerzeichen ist ein Zeichen.",
+      eyebrow: "Eine wohlverdiente Lücke",
+      title: "Welches Zeichen ist gesucht?",
+      hint: "Gib den Namen des Zeichens ein. Ist es richtig, wird die Lücke im Lösungswort automatisch gefüllt.",
       answers: ["Leerzeichen", "Leerstelle", "Space"],
       displayAnswer: "Leerzeichen",
       slotIndex: 5,
-      letter: " ",
-      provisional: true
+      letter: " "
     },
     {
       id: 8,
       videoFiles: ["08-1.mp4", "08-2.mp4"],
-      eyebrow: "Ein Name gesucht",
-      title: "Welcher Name ist gesucht?",
-      hint: "Gib den vollständigen Namen aus dem Video ein.",
-      answers: ["Alia"],
-      displayAnswer: "Alia",
+      eyebrow: "Werwölfe-Nostalgie",
+      title: "Welche Spielfigur ist gesucht?",
+      hint: "Gib den vollständigen Namen der Figur ein. Ist er richtig, wird automatisch ihr Anfangsbuchstabe übernommen.",
+      answers: ["Amor"],
+      displayAnswer: "Amor",
       slotIndex: 6,
       letter: "A"
     },
     {
       id: 9,
-      eyebrow: "Kims Rätsel",
-      title: "Wie lautet das gesuchte Wort?",
-      hint: "Diese Frage kann später in der Konfiguration ergänzt werden.",
+      eyebrow: "Kurz und persönlich",
+      title: "Welcher Buchstabe ist gesucht?",
+      hint: "Hier brauchst du kein ganzes Wort – ein einzelner Buchstabe genügt.",
       answers: ["U"],
-      displayAnswer: "U (vorläufig)",
+      displayAnswer: "U",
       slotIndex: 7,
-      letter: "U",
-      provisional: true
+      letter: "U"
     },
     {
       id: 10,
-      eyebrow: "Physik",
-      title: "Welche physikalische Größe ist gesucht?",
-      hint: "Gib die vollständige Lösung oder das passende Formelzeichen ein.",
-      answers: ["Widerstand", "elektrischer Widerstand", "R"],
-      displayAnswer: "Widerstand",
+      eyebrow: "Ohm lässt grüßen",
+      title: "Welches Formelzeichen ist gesucht?",
+      hint: "Gib nur das Formelzeichen der beschriebenen physikalischen Größe ein. Genau dieser Buchstabe wird anschließend übernommen.",
+      answers: ["R"],
+      displayAnswer: "R",
       slotIndex: 8,
       letter: "R"
     },
     {
       id: 11,
-      eyebrow: "Schmalkalden",
+      eyebrow: "Schmalkalden mit Geschichte",
       title: "Welche Kulturepoche ist gesucht?",
-      hint: "Gib die vollständige Kulturepoche ein.",
+      hint: "Gib das ganze Wort ein. Ist es richtig, wird automatisch der letzte Buchstabe ausgewählt.",
       answers: ["Renaissance"],
       displayAnswer: "Renaissance",
       slotIndex: 9,
@@ -156,19 +154,19 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 12,
-      eyebrow: "Eine kleine Pause",
-      title: "Welches Wort bzw. Getränk ist gesucht?",
-      hint: "Mehrere passende Antworten werden akzeptiert.",
-      answers: ["Ulmer Export", "Ur-Krostitzer", "Ur Krostitzer", "U"],
-      displayAnswer: "Ulmer Export / Ur-Krostitzer",
+      eyebrow: "Zeit für ein Kaltgetränk",
+      title: "Welcher Buchstabe ist gesucht?",
+      hint: "Hör genau auf die genannten Getränke. Hier reicht ihr gemeinsamer Anfangsbuchstabe.",
+      answers: ["U", "Ulmer Export", "Ur-Krostitzer", "Ur Krostitzer"],
+      displayAnswer: "U",
       slotIndex: 10,
       letter: "U"
     },
     {
       id: 13,
-      eyebrow: "Letzte Frage",
+      eyebrow: "Finale in Fambach",
       title: "Welcher Monat ist gesucht?",
-      hint: "Gib den vollständigen Monat ein.",
+      hint: "Gib den vollständigen Monat ein. Ist er richtig, wird automatisch sein erster Buchstabe als letztes Zeichen übernommen.",
       answers: ["September"],
       displayAnswer: "September",
       slotIndex: 11,

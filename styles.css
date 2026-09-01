@@ -1136,3 +1136,71 @@ video.is-hidden-media {
     border-radius: 20px;
   }
 }
+
+/* -------------------------------------------------------
+   v10 – Intro, Antwortsperre und Reaktions-Feedback
+   ------------------------------------------------------- */
+
+/* Im Moderations-Intro bewusst noch kein 1/3-Fortschritt. */
+.intro-video-topline {
+  justify-content: center;
+  text-align: center;
+}
+
+.intro-video-topline > div:first-child {
+  width: 100%;
+}
+
+/* Antwortfeld bleibt sichtbar, ist aber bis zum vollständigen Video klar gesperrt. */
+#answerForm.is-locked .input-wrap {
+  border-color: rgba(255,255,255,.07);
+  background: rgba(255,255,255,.035);
+  box-shadow: none;
+  filter: saturate(.35);
+  opacity: .58;
+}
+
+#answerForm.is-locked .input-wrap:focus-within {
+  border-color: rgba(255,255,255,.07);
+  box-shadow: none;
+}
+
+#answerForm.is-locked #answerInput {
+  color: #9a989f;
+}
+
+#answerForm.is-locked .submit-btn {
+  color: #85828a;
+  background: rgba(255,255,255,.08);
+  box-shadow: none;
+}
+
+/* Großes, stilistisch passendes Feedback über dem Reaktionsvideo. */
+.reaction-label {
+  display: block;
+  margin: 0 0 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.6rem, 8vw, 5.2rem);
+  font-weight: 600;
+  line-height: .95;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+
+.reaction-label.is-correct {
+  border: 0;
+  color: var(--gold-light);
+  background: transparent;
+  text-shadow: 0 0 34px rgba(214,173,98,.26), 0 10px 45px rgba(0,0,0,.5);
+}
+
+.reaction-label.is-wrong {
+  border: 0;
+  color: #aaa9b0;
+  background: transparent;
+  text-shadow: 0 10px 38px rgba(0,0,0,.55);
+}

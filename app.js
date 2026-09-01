@@ -21,8 +21,6 @@
     moderatorGrid: document.getElementById("moderatorGrid"),
     introVideoScreen: document.getElementById("introVideoScreen"),
     introVideo: document.getElementById("introVideo"),
-    introVideoCurrent: document.getElementById("introVideoCurrent"),
-    introVideoTotal: document.getElementById("introVideoTotal"),
     introVideoFallback: document.getElementById("introVideoFallback"),
     introVideoPlayBtn: document.getElementById("introVideoPlayBtn"),
     introScreen: document.getElementById("introScreen"),
@@ -240,8 +238,6 @@
 
   function playIntroVideo(index) {
     const src = config.media.introVideos[index];
-    els.introVideoCurrent.textContent = String(index + 1);
-    els.introVideoTotal.textContent = String(config.media.introVideos.length);
     els.introVideoFallback.classList.add("is-hidden");
 
     els.introVideo.pause();
@@ -308,6 +304,7 @@
     const active = enabled && !state.resolved;
     els.answerInput.disabled = !active;
     els.submitBtn.disabled = !active;
+    els.answerForm.classList.toggle("is-locked", !active);
   }
 
   function resetAnswerUi() {
@@ -315,8 +312,8 @@
     state.resolved = false;
     state.interactionLocked = false;
     els.answerInput.value = "";
-    els.answerInput.disabled = false;
-    els.submitBtn.disabled = false;
+    els.answerInput.placeholder = "Erst Video vollständig ansehen …";
+    setAnswerInteraction(false);
     els.revealBox.classList.add("is-hidden");
     els.continueBtn.classList.add("is-hidden");
     els.continueBtn.classList.remove("is-highlighted");
@@ -435,7 +432,6 @@
     if (state.videoMissing || state.betweenQuestionVideos) return;
 
     if (state.videoWatched) {
-      state.videoWatched = false;
       setQuestionVideoSource(0);
     } else if (els.video.ended) {
       els.video.currentTime = 0;
@@ -508,7 +504,6 @@
       els.solutionPanel.classList.remove("is-hidden");
     }
 
-    setTimeout(() => els.answerInput.focus(), 180);
   }
 
   async function animateLetterToSlot(question) {
@@ -794,6 +789,11 @@
     els.video.parentElement.style.background = "";
     showPostVideoImage();
     updateVideoActionButton();
+    if (!state.resolved && !state.interactionLocked) {
+      els.answerInput.placeholder = "Antwort eingeben …";
+      setAnswerInteraction(true);
+      window.setTimeout(() => els.answerInput.focus(), 120);
+    }
   });
 
   els.video.addEventListener("error", () => {
