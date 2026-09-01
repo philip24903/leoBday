@@ -655,6 +655,7 @@
         els.reactionVideo.pause();
         els.reactionVideo.removeAttribute("src");
         els.reactionVideo.load();
+        els.reactionVideo.classList.remove("is-finished");
         els.reactionOverlay.classList.add("is-hidden");
         els.reactionFallback.classList.add("is-hidden");
         els.reactionNextBtn.classList.add("is-hidden");
@@ -666,6 +667,7 @@
 
       function showNextButton() {
         if (!waitsForNextClick || finished) return;
+        els.reactionVideo.classList.add("is-finished");
         els.reactionNextBtn.classList.remove("is-hidden");
         els.reactionNextBtn.classList.add("is-ready");
         els.reactionNextBtn.disabled = false;
@@ -675,8 +677,8 @@
       els.reactionLabel.textContent = kind === "correct" ? "Richtig" : "Falsch";
       els.reactionLabel.className = `reaction-label ${kind === "correct" ? "is-correct" : "is-wrong"}`;
       els.reactionFallback.classList.add("is-hidden");
-      els.reactionVideo.classList.remove("is-hidden");
-      els.reactionNextBtn.classList.toggle("is-hidden", !waitsForNextClick);
+      els.reactionVideo.classList.remove("is-hidden", "is-finished");
+      els.reactionNextBtn.classList.add("is-hidden");
       els.reactionNextBtn.classList.remove("is-ready");
       els.reactionNextBtn.disabled = true;
       els.reactionOverlay.classList.remove("is-hidden");

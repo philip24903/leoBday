@@ -1050,6 +1050,13 @@ video.is-hidden-media {
   height: 100%;
   object-fit: contain;
   background: #050508;
+  transition: filter .55s ease, transform .55s ease, opacity .55s ease;
+}
+
+#reactionVideo.is-finished {
+  filter: blur(18px) brightness(.42);
+  transform: scale(1.045);
+  opacity: .72;
 }
 
 #reactionVideo.is-hidden {
@@ -1220,68 +1227,58 @@ video.is-hidden-media {
 }
 
 /* -------------------------------------------------------
-   Weiter-Pfeil direkt neben dem Richtig-Reaktionsvideo
+   Weiter-Pfeil nach dem Richtig-Reaktionsvideo
    ------------------------------------------------------- */
 .reaction-card {
-  width: min(570px, 100%);
+  width: min(500px, 100%);
 }
 
 .reaction-content {
-  display: grid;
-  grid-template-columns: minmax(0, 440px) 76px;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
+  position: relative;
+  display: block;
 }
 
 .reaction-frame {
-  width: 100%;
-  margin: 0;
+  width: min(440px, 100%);
+  margin: 0 auto;
 }
 
 .reaction-next-btn {
-  width: 70px;
-  height: 70px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 4;
+  width: 78px;
+  height: 78px;
   display: inline-grid;
   place-items: center;
-  align-self: center;
-  border: 1px solid rgba(255,255,255,.12);
+  border: 1px solid rgba(242,215,156,.72);
   border-radius: 50%;
-  color: rgba(255,255,255,.34);
-  background: rgba(255,255,255,.055);
-  box-shadow: 0 12px 32px rgba(0,0,0,.24);
-  cursor: not-allowed;
-  opacity: .72;
-  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease, opacity .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+  color: #17130d;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  box-shadow: 0 20px 58px rgba(0,0,0,.48), 0 0 0 7px rgba(214,173,98,.08), 0 0 42px rgba(214,173,98,.30);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: box-shadow .18s ease, filter .18s ease, opacity .18s ease;
+  animation: reactionNextPulse 1.45s ease-in-out infinite;
 }
 
 .reaction-next-btn span {
   display: block;
-  font-size: 2rem;
+  font-size: 2.15rem;
   font-weight: 700;
   line-height: 1;
-  transform: translateX(1px) translateY(-1px);
-}
-
-.reaction-next-btn.is-ready:not(:disabled) {
-  border-color: rgba(242,215,156,.70);
-  color: #17130d;
-  background: linear-gradient(135deg, var(--gold-light), var(--gold));
-  box-shadow: 0 18px 48px rgba(214,173,98,.25), 0 0 0 5px rgba(214,173,98,.06);
-  cursor: pointer;
-  opacity: 1;
-  animation: reactionNextPulse 1.45s ease-in-out infinite;
+  transform: translateX(2px) translateY(-1px);
 }
 
 .reaction-next-btn.is-ready:not(:disabled):hover {
-  transform: translateX(4px) scale(1.06);
-  box-shadow: 0 22px 60px rgba(214,173,98,.34), 0 0 0 6px rgba(214,173,98,.09);
-  filter: brightness(1.05);
+  box-shadow: 0 24px 70px rgba(0,0,0,.54), 0 0 0 9px rgba(214,173,98,.10), 0 0 55px rgba(214,173,98,.40);
+  filter: brightness(1.07);
 }
 
 .reaction-next-btn:focus-visible {
   outline: 2px solid var(--gold-light);
-  outline-offset: 5px;
+  outline-offset: 6px;
 }
 
 .reaction-next-btn:disabled {
@@ -1293,26 +1290,17 @@ video.is-hidden-media {
 }
 
 @keyframes reactionNextPulse {
-  0%, 100% { box-shadow: 0 18px 48px rgba(214,173,98,.25), 0 0 0 5px rgba(214,173,98,.06); }
-  50% { box-shadow: 0 22px 62px rgba(214,173,98,.38), 0 0 0 9px rgba(214,173,98,.035); }
+  0%, 100% { box-shadow: 0 20px 58px rgba(0,0,0,.48), 0 0 0 7px rgba(214,173,98,.08), 0 0 42px rgba(214,173,98,.30); }
+  50% { box-shadow: 0 24px 68px rgba(0,0,0,.52), 0 0 0 12px rgba(214,173,98,.04), 0 0 56px rgba(214,173,98,.42); }
 }
 
 @media (max-width: 620px) {
-  .reaction-card {
-    width: min(500px, 100%);
-  }
-
-  .reaction-content {
-    grid-template-columns: minmax(0, 1fr) 58px;
-    gap: 12px;
-  }
-
   .reaction-next-btn {
-    width: 56px;
-    height: 56px;
+    width: 66px;
+    height: 66px;
   }
 
   .reaction-next-btn span {
-    font-size: 1.65rem;
+    font-size: 1.85rem;
   }
 }
