@@ -27,7 +27,7 @@ window.QUIZ_CONFIG = {
       id: 1,
       eyebrow: "Zum Warmwerden",
       title: "Welche Zahl ist gesucht?",
-      hint: "Gib nur das Ergebnis ein. Es verrät dir gleich, wie viele Zeichen dein Lösungswort hat.",
+      hint: "f(x)=x²−24x+180 - Bestimme die x-Koordinate des Scheitelpunkts der Parabel. Gib nur das Ergebnis ein. Es verrät dir gleich, wie viele Zeichen dein Lösungswort hat.",
       answers: ["12", "zwölf", "zwoelf"],
       displayAnswer: "12",
       slotIndex: null,

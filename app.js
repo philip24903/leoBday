@@ -61,6 +61,7 @@
     reactionFallback: document.getElementById("reactionFallback"),
     reactionFallbackText: document.getElementById("reactionFallbackText"),
     reactionFallbackBtn: document.getElementById("reactionFallbackBtn"),
+    reactionNextBtn: document.getElementById("reactionNextBtn"),
     toast: document.getElementById("toast"),
     finalWord: document.getElementById("finalWord"),
     flyingLetter: document.getElementById("flyingLetter"),
@@ -646,8 +647,9 @@
     return new Promise(resolve => {
       let finished = false;
       const src = reactionVideoPath(kind, question);
+      const waitsForNextClick = kind === "correct";
 
-      function finish() {
+      function cleanupAndResolve() {
         if (finished) return;
         finished = true;
         els.reactionVideo.pause();
@@ -655,21 +657,32 @@
         els.reactionVideo.load();
         els.reactionOverlay.classList.add("is-hidden");
         els.reactionFallback.classList.add("is-hidden");
+        els.reactionNextBtn.classList.add("is-hidden");
+        els.reactionNextBtn.onclick = null;
         resolve();
+      }
+
+      function showNextButton() {
+        if (!waitsForNextClick || finished) return;
+        els.reactionNextBtn.classList.remove("is-hidden");
+        els.reactionNextBtn.focus({ preventScroll: true });
       }
 
       els.reactionLabel.textContent = kind === "correct" ? "Richtig" : "Falsch";
       els.reactionLabel.className = `reaction-label ${kind === "correct" ? "is-correct" : "is-wrong"}`;
       els.reactionFallback.classList.add("is-hidden");
       els.reactionVideo.classList.remove("is-hidden");
+      els.reactionNextBtn.classList.add("is-hidden");
       els.reactionOverlay.classList.remove("is-hidden");
 
-      els.reactionFallbackBtn.onclick = finish;
-      els.reactionVideo.onended = finish;
+      els.reactionNextBtn.onclick = cleanupAndResolve;
+      els.reactionFallbackBtn.onclick = waitsForNextClick ? showNextButton : cleanupAndResolve;
+      els.reactionVideo.onended = waitsForNextClick ? showNextButton : cleanupAndResolve;
       els.reactionVideo.onerror = () => {
         els.reactionVideo.classList.add("is-hidden");
         els.reactionFallbackText.textContent = `Das Reaktionsvideo ${pad2(question.id)}.mp4 wurde im Ordner ${kind === "correct" ? "Richtig" : "Falsch"} nicht gefunden.`;
         els.reactionFallback.classList.remove("is-hidden");
+        if (waitsForNextClick) showNextButton();
       };
 
       els.reactionVideo.src = src;
@@ -680,6 +693,7 @@
           els.reactionVideo.classList.add("is-hidden");
           els.reactionFallbackText.textContent = "Das Reaktionsvideo konnte nicht automatisch gestartet werden.";
           els.reactionFallback.classList.remove("is-hidden");
+          if (waitsForNextClick) showNextButton();
         });
       }
     });
@@ -707,11 +721,17 @@
       await animateLetterToSlot(question);
     }
 
+    if (correct) {
+      state.interactionLocked = false;
+      goNext();
+      return;
+    }
+
     els.continueBtn.textContent = state.currentIndex === questions.length - 1
       ? "Geschenk enthüllen"
       : "Weiter zur nächsten Frage";
     els.continueBtn.classList.remove("is-hidden");
-    els.continueBtn.classList.toggle("is-highlighted", correct);
+    els.continueBtn.classList.remove("is-highlighted");
     state.interactionLocked = false;
   }
 

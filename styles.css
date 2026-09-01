@@ -1218,3 +1218,87 @@ video.is-hidden-media {
   background: transparent;
   text-shadow: 0 10px 38px rgba(0,0,0,.55);
 }
+
+/* -------------------------------------------------------
+   Weiter-Pfeil direkt neben dem Richtig-Reaktionsvideo
+   ------------------------------------------------------- */
+.reaction-card {
+  width: min(570px, 100%);
+}
+
+.reaction-content {
+  display: grid;
+  grid-template-columns: minmax(0, 440px) 76px;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.reaction-frame {
+  width: 100%;
+  margin: 0;
+}
+
+.reaction-next-btn {
+  width: 70px;
+  height: 70px;
+  display: inline-grid;
+  place-items: center;
+  align-self: center;
+  border: 1px solid rgba(242,215,156,.70);
+  border-radius: 50%;
+  color: #17130d;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  box-shadow: 0 18px 48px rgba(214,173,98,.25), 0 0 0 5px rgba(214,173,98,.06);
+  cursor: pointer;
+  animation: reactionNextPulse 1.45s ease-in-out infinite;
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+
+.reaction-next-btn span {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateX(1px) translateY(-1px);
+}
+
+.reaction-next-btn:hover {
+  transform: translateX(4px) scale(1.06);
+  box-shadow: 0 22px 60px rgba(214,173,98,.34), 0 0 0 6px rgba(214,173,98,.09);
+  filter: brightness(1.05);
+}
+
+.reaction-next-btn:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 5px;
+}
+
+.reaction-next-btn.is-hidden {
+  display: none;
+}
+
+@keyframes reactionNextPulse {
+  0%, 100% { box-shadow: 0 18px 48px rgba(214,173,98,.25), 0 0 0 5px rgba(214,173,98,.06); }
+  50% { box-shadow: 0 22px 62px rgba(214,173,98,.38), 0 0 0 9px rgba(214,173,98,.035); }
+}
+
+@media (max-width: 620px) {
+  .reaction-card {
+    width: min(500px, 100%);
+  }
+
+  .reaction-content {
+    grid-template-columns: minmax(0, 1fr) 58px;
+    gap: 12px;
+  }
+
+  .reaction-next-btn {
+    width: 56px;
+    height: 56px;
+  }
+
+  .reaction-next-btn span {
+    font-size: 1.65rem;
+  }
+}

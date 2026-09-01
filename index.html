@@ -146,12 +146,17 @@
   <div class="reaction-overlay is-hidden" id="reactionOverlay" aria-live="polite">
     <div class="reaction-card">
       <div class="reaction-label" id="reactionLabel">Richtig</div>
-      <div class="reaction-frame">
-        <video id="reactionVideo" playsinline preload="auto" disablepictureinpicture></video>
-        <div class="reaction-fallback is-hidden" id="reactionFallback">
-          <p id="reactionFallbackText">Das Reaktionsvideo konnte nicht gestartet werden.</p>
-          <button class="secondary-btn" id="reactionFallbackBtn" type="button">Weiter</button>
+      <div class="reaction-content">
+        <div class="reaction-frame">
+          <video id="reactionVideo" playsinline preload="auto" disablepictureinpicture></video>
+          <div class="reaction-fallback is-hidden" id="reactionFallback">
+            <p id="reactionFallbackText">Das Reaktionsvideo konnte nicht gestartet werden.</p>
+            <button class="secondary-btn" id="reactionFallbackBtn" type="button">Weiter</button>
+          </div>
         </div>
+        <button class="reaction-next-btn is-hidden" id="reactionNextBtn" type="button" aria-label="Weiter zur nächsten Frage" title="Weiter zur nächsten Frage">
+          <span aria-hidden="true">→</span>
+        </button>
       </div>
     </div>
   </div>
