@@ -75,7 +75,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 4,
-      eyebrow: "Latein verbindet",
+      eyebrow: "Latein - auch das muss sein!",
       title: "Welcher Buchstabe ist gesucht?",
       hint: "Denk an die gemeinsame Besonderheit der genannten Lehrkräfte. Hier reicht der gesuchte Buchstabe.",
       answers: ["N"],
@@ -105,7 +105,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 7,
-      eyebrow: "Eine wohlverdiente Lücke",
+      eyebrow: "Mut zur Lücke",
       title: "Welches Zeichen ist gesucht?",
       hint: "Gib den Namen des Zeichens ein. Ist es richtig, wird die Lücke im Lösungswort automatisch gefüllt.",
       answers: ["Leerzeichen", "Leerstelle", "Space"],
@@ -116,7 +116,7 @@ window.QUIZ_CONFIG = {
     {
       id: 8,
       videoFiles: ["08-1.mp4", "08-2.mp4"],
-      eyebrow: "Werwölfe-Nostalgie",
+      eyebrow: "Die Wölfe sind los!",
       title: "Welche Spielfigur ist gesucht?",
       hint: "Gib den vollständigen Namen der Figur ein. Ist er richtig, wird automatisch ihr Anfangsbuchstabe übernommen.",
       answers: ["Amor"],
