@@ -896,8 +896,8 @@
     requestAnimationFrame(frame);
   }
 
-  // Die Gesamtzahl bleibt bis nach Frage 01 verborgen, damit die Einstiegsaufgabe nichts vorwegnimmt.
-  els.questionCountIntro.textContent = "X";
+  // In der Übersicht darf die Gesamtzahl sichtbar sein; nur bei Frage 01 bleibt sie verborgen.
+  els.questionCountIntro.textContent = String(questions.length);
   els.progressTotal.textContent = "X";
 
   els.startBtn.addEventListener("click", startQuiz);
