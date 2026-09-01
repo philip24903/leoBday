@@ -1,23 +1,3 @@
-/*
-  Zentrale Konfiguration für Leopolds Geburtstagsüberraschung.
-
-  Ordnerstruktur unter "files":
-    files/Intro/01.mp4 ... 03.mp4
-    Abschlussvideo: files/Intro/04..mp4
-    files/Fragen/01.mp4 ... 13.mp4
-    Ausnahme Frage 08: files/Fragen/08-1.mp4 und 08-2.mp4
-    files/Richtig/01.mp4 ... 13.mp4
-    files/Falsch/01.mp4 ... 13.mp4
-
-  Ablauf:
-  - Zuerst läuft die Moderation über die drei Intro-Videos.
-  - Frage 01 ergibt die Zahl 12.
-  - Danach erscheinen 12 Platzhalter für "CANIS AUREUS".
-  - Die Fragen 02 bis 13 liefern alle 12 Zeichen – inklusive Leerzeichen.
-
-  Die Texte "eyebrow", "title" und "hint" können pro Frage frei angepasst werden.
-*/
-
 window.QUIZ_CONFIG = {
   finalPhrase: "CANIS AUREUS",
   slots: ["C", "A", "N", "I", "S", " ", "A", "U", "R", "E", "U", "S"],
