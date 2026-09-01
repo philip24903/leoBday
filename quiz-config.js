@@ -3,6 +3,7 @@
 
   Ordnerstruktur unter "files":
     files/Intro/01.mp4 ... 03.mp4
+    Abschlussvideo: files/Intro/04..mp4
     files/Fragen/01.mp4 ... 13.mp4
     Ausnahme Frage 08: files/Fragen/08-1.mp4 und 08-2.mp4
     files/Richtig/01.mp4 ... 13.mp4
@@ -27,6 +28,7 @@ window.QUIZ_CONFIG = {
       "files/Intro/02.mp4",
       "files/Intro/03.mp4"
     ],
+    finaleVideo: "files/Intro/04..mp4",
     questionsDirectory: "files/Fragen",
     correctDirectory: "files/Richtig",
     wrongDirectory: "files/Falsch",
@@ -83,11 +85,11 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 5,
-      eyebrow: "Eine Ebene höher",
-      title: "Welche Zahl ist gesucht?",
-      hint: "Gib die gemeinsame Zahl ein. Ist sie richtig, wandelt das Quiz sie automatisch in den passenden Buchstaben um.",
-      answers: ["9", "neun"],
-      displayAnswer: "9",
+      eyebrow: "Ortschaften verbinden",
+      title: "Es ist ein Buchstabe gesucht... Aber vielleicht löst ja auch hier eine Zahl alle Probleme?",
+      hint: "Suche eine Zahl die alle diese Orte verbindet und leite anhand dieser den Buchstaben her!",
+      answers: ["I"],
+      displayAnswer: "I",
       slotIndex: 3,
       letter: "I"
     },
@@ -156,7 +158,7 @@ window.QUIZ_CONFIG = {
       id: 12,
       eyebrow: "Zeit für ein Kaltgetränk",
       title: "Welcher Buchstabe ist gesucht?",
-      hint: "Hör genau auf die genannten Getränke. Hier reicht ihr gemeinsamer Anfangsbuchstabe.",
+      hint: "Vielleicht hilft dir hier das Bier?",
       answers: ["U", "Ulmer Export", "Ur-Krostitzer", "Ur Krostitzer"],
       displayAnswer: "U",
       slotIndex: 10,

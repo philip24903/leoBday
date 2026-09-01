@@ -6,14 +6,19 @@
     currentIndex: 0,
     attemptsLeft: 3,
     resolved: false,
+    resolvedCorrectly: false,
     interactionLocked: false,
     revealedSlots: new Set(),
     videoWatched: false,
     videoMissing: false,
     introIndex: 0,
     questionVideoPaths: [],
+    questionVideoDurations: [],
+    questionDurationsPromise: null,
     currentVideoPart: 0,
-    betweenQuestionVideos: false
+    betweenQuestionVideos: false,
+    questionPlaybackActive: false,
+    introMode: "opening"
   };
 
   const els = {
@@ -27,7 +32,6 @@
     quizScreen: document.getElementById("quizScreen"),
     finaleScreen: document.getElementById("finaleScreen"),
     startBtn: document.getElementById("startBtn"),
-    restartBtn: document.getElementById("restartBtn"),
     questionCountIntro: document.getElementById("questionCountIntro"),
     questionLabel: document.getElementById("questionLabel"),
     progressCurrent: document.getElementById("progressCurrent"),
@@ -212,7 +216,10 @@
   });
 
   function startIntroSequence() {
+    state.introMode = "opening";
     state.introIndex = 0;
+    const topLine = els.introVideoScreen.querySelector(".intro-video-topline");
+    if (topLine) topLine.classList.remove("is-hidden");
     showScreen(els.introVideoScreen);
     playIntroVideo(state.introIndex);
   }
@@ -261,13 +268,22 @@
 
   els.introVideoPlayBtn.addEventListener("click", () => {
     if (els.introVideoPlayBtn.dataset.mode === "skip") {
-      advanceIntro();
+      if (state.introMode === "finale") {
+        showFinale();
+      } else {
+        advanceIntro();
+      }
       return;
     }
 
     els.introVideoFallback.classList.add("is-hidden");
     els.introVideo.play().catch(() => {
-      showIntroFallback("Das Video lässt sich hier nicht starten. Du kannst es überspringen.", "skip");
+      showIntroFallback(
+        state.introMode === "finale"
+          ? "Das Abschlussvideo lässt sich hier nicht starten. Du kannst direkt zum Geschenk weitergehen."
+          : "Das Video lässt sich hier nicht starten. Du kannst es überspringen.",
+        "skip"
+      );
     });
   });
 
@@ -310,6 +326,7 @@
   function resetAnswerUi() {
     state.attemptsLeft = 3;
     state.resolved = false;
+    state.resolvedCorrectly = false;
     state.interactionLocked = false;
     els.answerInput.value = "";
     els.answerInput.placeholder = "Erst Video vollständig ansehen …";
@@ -330,6 +347,10 @@
 
   function updateVideoActionButton() {
     els.videoActionBtn.classList.toggle("is-missing", state.videoMissing);
+    els.videoActionBtn.classList.toggle(
+      "is-resolved-replay",
+      state.resolved && state.resolvedCorrectly && state.videoWatched && !state.videoMissing
+    );
 
     if (state.betweenQuestionVideos) {
       els.videoActionBtn.disabled = true;
@@ -344,7 +365,7 @@
     }
 
     if (!els.video.paused && !els.video.ended) {
-      const remaining = els.video.duration - els.video.currentTime;
+      const remaining = totalQuestionRemainingTime();
       els.videoActionBtn.disabled = true;
       els.videoActionBtn.textContent = `Noch ${formatTime(remaining)}`;
       return;
@@ -375,6 +396,61 @@
       : [`${pad2(question.id)}.mp4`];
 
     return files.map(file => `${config.media.questionsDirectory}/${file}`);
+  }
+
+  const videoDurationCache = new Map();
+
+  function probeVideoDuration(src) {
+    if (videoDurationCache.has(src)) {
+      return Promise.resolve(videoDurationCache.get(src));
+    }
+
+    return new Promise(resolve => {
+      const probe = document.createElement("video");
+      probe.preload = "metadata";
+      probe.muted = true;
+
+      const finish = duration => {
+        probe.removeAttribute("src");
+        probe.load();
+        const value = Number.isFinite(duration) ? duration : 0;
+        videoDurationCache.set(src, value);
+        resolve(value);
+      };
+
+      probe.addEventListener("loadedmetadata", () => finish(probe.duration), { once: true });
+      probe.addEventListener("error", () => finish(0), { once: true });
+      probe.src = src;
+      probe.load();
+    });
+  }
+
+  function preloadQuestionDurations(paths) {
+    return Promise.all(paths.map(probeVideoDuration)).then(durations => {
+      if (paths.length === state.questionVideoPaths.length &&
+          paths.every((path, index) => path === state.questionVideoPaths[index])) {
+        state.questionVideoDurations = durations;
+        updateVideoActionButton();
+      }
+      return durations;
+    });
+  }
+
+  function totalQuestionRemainingTime() {
+    const currentDuration = Number.isFinite(els.video.duration)
+      ? els.video.duration
+      : (state.questionVideoDurations[state.currentVideoPart] || 0);
+    let remaining = Math.max(0, currentDuration - (els.video.currentTime || 0));
+
+    for (let index = state.currentVideoPart + 1; index < state.questionVideoPaths.length; index += 1) {
+      remaining += state.questionVideoDurations[index] || 0;
+    }
+
+    // Die reale Sekunde Schwarzblende gehört zur verbleibenden Wartezeit dazu.
+    const transitionsLeft = Math.max(0, state.questionVideoPaths.length - 1 - state.currentVideoPart);
+    remaining += transitionsLeft;
+
+    return remaining;
   }
 
   function currentQuestionVideoFilename() {
@@ -409,7 +485,10 @@
     state.videoWatched = false;
     state.videoMissing = false;
     state.betweenQuestionVideos = false;
+    state.questionPlaybackActive = false;
     state.questionVideoPaths = questionVideoPaths(question);
+    state.questionVideoDurations = [];
+    state.questionDurationsPromise = preloadQuestionDurations([...state.questionVideoPaths]);
     state.currentVideoPart = 0;
     els.video.style.opacity = "";
     els.video.parentElement.style.background = "";
@@ -431,12 +510,19 @@
   async function playCurrentVideo() {
     if (state.videoMissing || state.betweenQuestionVideos) return;
 
+    if (state.questionVideoPaths.length > 1 && state.questionDurationsPromise) {
+      els.videoActionBtn.disabled = true;
+      els.videoActionBtn.textContent = "Wird vorbereitet …";
+      await state.questionDurationsPromise.catch(() => {});
+    }
+
     if (state.videoWatched) {
       setQuestionVideoSource(0);
     } else if (els.video.ended) {
       els.video.currentTime = 0;
     }
 
+    state.questionPlaybackActive = true;
     els.video.style.opacity = "";
     els.video.parentElement.style.background = "";
     showQuestionVideo({ blurred: false });
@@ -444,6 +530,7 @@
     try {
       await els.video.play();
     } catch {
+      state.questionPlaybackActive = false;
       showQuestionVideo({ blurred: true });
       els.videoActionBtn.disabled = false;
       els.videoActionBtn.textContent = state.videoWatched ? "Nochmal abspielen" : "Los geht's!";
@@ -464,12 +551,15 @@
     setQuestionVideoSource(state.currentVideoPart + 1);
 
     try {
+      showQuestionVideo({ blurred: false });
       await els.video.play();
+      showQuestionVideo({ blurred: false });
       els.video.parentElement.style.background = "";
       requestAnimationFrame(() => {
         els.video.style.opacity = "1";
       });
     } catch {
+      state.questionPlaybackActive = false;
       els.video.style.opacity = "";
       els.video.parentElement.style.background = "";
       showQuestionVideo({ blurred: true });
@@ -598,8 +688,10 @@
   async function resolveQuestion(correct, exhausted = false) {
     const question = questions[state.currentIndex];
     state.resolved = true;
+    state.resolvedCorrectly = correct;
     state.interactionLocked = true;
     setAnswerInteraction(false);
+    updateVideoActionButton();
 
     if (correct) {
       await playReaction("correct", question);
@@ -670,7 +762,7 @@
     if (!state.resolved || state.interactionLocked) return;
 
     if (state.currentIndex >= questions.length - 1) {
-      showFinale();
+      playFinaleVideo();
       return;
     }
 
@@ -683,6 +775,7 @@
     state.currentIndex = 0;
     state.attemptsLeft = 3;
     state.resolved = false;
+    state.resolvedCorrectly = false;
     state.interactionLocked = false;
     state.revealedSlots.clear();
     buildBoard();
@@ -690,8 +783,40 @@
     renderQuestion();
   }
 
+  function playFinaleVideo() {
+    state.introMode = "finale";
+    const topLine = els.introVideoScreen.querySelector(".intro-video-topline");
+    if (topLine) topLine.classList.add("is-hidden");
+
+    showScreen(els.introVideoScreen);
+    els.introVideoFallback.classList.add("is-hidden");
+    els.introVideo.pause();
+    els.introVideo.removeAttribute("src");
+    els.introVideo.load();
+    els.introVideo.src = config.media.finaleVideo;
+    els.introVideo.load();
+
+    els.introVideo.onended = showFinale;
+    els.introVideo.onerror = () => {
+      showIntroFallback("Das Abschlussvideo wurde nicht gefunden. Du kannst direkt zum Geschenk weitergehen.", "skip");
+    };
+
+    const playPromise = els.introVideo.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => {
+        showIntroFallback("Das Abschlussvideo konnte nicht automatisch gestartet werden.", "play");
+      });
+    }
+  }
+
   function showFinale() {
     els.video.pause();
+    els.introVideo.pause();
+    els.introVideo.removeAttribute("src");
+    els.introVideo.load();
+    const topLine = els.introVideoScreen.querySelector(".intro-video-topline");
+    if (topLine) topLine.classList.remove("is-hidden");
+    state.introMode = "opening";
     showScreen(els.finaleScreen);
     els.finalWord.textContent = config.finalPhrase;
     launchConfetti();
@@ -749,11 +874,6 @@
   els.progressTotal.textContent = String(questions.length);
 
   els.startBtn.addEventListener("click", startQuiz);
-  els.restartBtn.addEventListener("click", () => {
-    state.revealedSlots.clear();
-    buildBoard();
-    showScreen(els.moderatorScreen);
-  });
 
   els.answerForm.addEventListener("submit", event => {
     event.preventDefault();
@@ -784,6 +904,7 @@
       return;
     }
 
+    state.questionPlaybackActive = false;
     state.videoWatched = true;
     els.video.style.opacity = "";
     els.video.parentElement.style.background = "";
@@ -797,6 +918,7 @@
   });
 
   els.video.addEventListener("error", () => {
+    state.questionPlaybackActive = false;
     state.videoMissing = true;
     state.betweenQuestionVideos = false;
     els.video.style.opacity = "";
@@ -810,7 +932,15 @@
   els.video.addEventListener("loadedmetadata", () => {
     state.videoMissing = false;
     els.videoMissing.classList.add("is-hidden");
-    showQuestionVideo({ blurred: true });
+
+    if (Number.isFinite(els.video.duration)) {
+      state.questionVideoDurations[state.currentVideoPart] = els.video.duration;
+      const src = state.questionVideoPaths[state.currentVideoPart];
+      if (src) videoDurationCache.set(src, els.video.duration);
+    }
+
+    // Während einer laufenden Mehrteil-Frage darf der neu geladene Teil nicht wieder verschwimmen.
+    showQuestionVideo({ blurred: !state.questionPlaybackActive });
     updateVideoActionButton();
   });
 
