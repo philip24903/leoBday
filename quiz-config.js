@@ -1,7 +1,6 @@
 window.QUIZ_CONFIG = {
   finalPhrase: "CANIS AUREUS",
   slots: ["C", "A", "N", "I", "S", " ", "A", "U", "R", "E", "U", "S"],
-
   media: {
     introVideos: [
       "files/Intro/01.mp4",
@@ -14,14 +13,12 @@ window.QUIZ_CONFIG = {
     wrongDirectory: "files/Falsch",
     postImages: ["files/bild01.png", "files/bild02.png"]
   },
-
   moderatorOptions: [
     { label: "Johannes / Martin", preferred: true },
     { label: "Günther Jauch" },
     { label: "Stefan Raab" },
     { label: "Thomas Gottschalk" }
   ],
-
   questions: [
     {
       id: 1,
@@ -116,6 +113,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 10,
+      correctVideoFiles: ["10-1.mp4", "10-2.mp4", "10-3.mp4"],
       eyebrow: "Newton, Tesla, Einstein, Wolf",
       title: "Welches Formelzeichen ist gesucht?",
       hint: "Diese Frage kannst du nur beantworten, wenn du auch Teil der Physik-Elite bist",

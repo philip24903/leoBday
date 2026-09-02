@@ -475,11 +475,20 @@
     els.video.load();
   }
 
-  function reactionVideoPath(kind, question) {
+  function reactionVideoPaths(kind, question) {
     const directory = kind === "correct"
       ? config.media.correctDirectory
       : config.media.wrongDirectory;
-    return `${directory}/${pad2(question.id)}.mp4`;
+
+    const configuredFiles = kind === "correct"
+      ? question.correctVideoFiles
+      : question.wrongVideoFiles;
+
+    const files = Array.isArray(configuredFiles) && configuredFiles.length
+      ? configuredFiles
+      : [`${pad2(question.id)}.mp4`];
+
+    return files.map(file => `${directory}/${file}`);
   }
 
   function loadQuestionVideo(question) {
@@ -646,15 +655,25 @@
   function playReaction(kind, question) {
     return new Promise(resolve => {
       let finished = false;
-      const src = reactionVideoPath(kind, question);
+      let sequenceFailed = false;
+      const paths = reactionVideoPaths(kind, question);
       const waitsForNextClick = kind === "correct";
+
+      function clearReactionHandlers() {
+        els.reactionVideo.onended = null;
+        els.reactionVideo.onerror = null;
+        els.reactionFallbackBtn.onclick = null;
+      }
 
       function cleanupAndResolve() {
         if (finished) return;
         finished = true;
+        clearReactionHandlers();
         els.reactionVideo.pause();
         els.reactionVideo.removeAttribute("src");
         els.reactionVideo.load();
+        els.reactionVideo.style.opacity = "";
+        els.reactionVideo.style.transition = "";
         els.reactionVideo.classList.remove("is-finished");
         els.reactionOverlay.classList.add("is-hidden");
         els.reactionFallback.classList.add("is-hidden");
@@ -667,6 +686,10 @@
 
       function showNextButton() {
         if (!waitsForNextClick || finished) return;
+        els.reactionFallback.classList.add("is-hidden");
+        els.reactionVideo.classList.remove("is-hidden");
+        els.reactionVideo.style.opacity = "";
+        els.reactionVideo.style.transition = "";
         els.reactionVideo.classList.add("is-finished");
         els.reactionNextBtn.classList.remove("is-hidden");
         els.reactionNextBtn.classList.add("is-ready");
@@ -674,36 +697,88 @@
         els.reactionNextBtn.focus({ preventScroll: true });
       }
 
+      function showReactionError(path) {
+        if (finished || sequenceFailed) return;
+        sequenceFailed = true;
+        const filename = path.split("/").pop() || `${pad2(question.id)}.mp4`;
+        clearReactionHandlers();
+        els.reactionVideo.pause();
+        els.reactionVideo.classList.add("is-hidden");
+        els.reactionFallbackText.textContent = `Das Reaktionsvideo ${filename} wurde im Ordner ${kind === "correct" ? "Richtig" : "Falsch"} nicht gefunden oder konnte nicht gestartet werden.`;
+        els.reactionFallback.classList.remove("is-hidden");
+        els.reactionFallbackBtn.onclick = waitsForNextClick ? showNextButton : cleanupAndResolve;
+      }
+
+      function playVideoUntilEnd(src) {
+        return new Promise((resolvePart, rejectPart) => {
+          if (finished || sequenceFailed) {
+            rejectPart(new Error("reaction-aborted"));
+            return;
+          }
+
+          clearReactionHandlers();
+          els.reactionVideo.classList.remove("is-hidden", "is-finished");
+          els.reactionVideo.onerror = () => rejectPart(new Error("video-error"));
+          els.reactionVideo.onended = () => resolvePart();
+          els.reactionVideo.src = src;
+          els.reactionVideo.load();
+
+          const playPromise = els.reactionVideo.play();
+          if (playPromise && typeof playPromise.then === "function") {
+            playPromise.then(() => {
+              els.reactionVideo.style.opacity = "1";
+              requestAnimationFrame(() => {
+                els.reactionVideo.style.transition = "";
+              });
+            }).catch(() => rejectPart(new Error("play-error")));
+          } else {
+            els.reactionVideo.style.opacity = "1";
+            els.reactionVideo.style.transition = "";
+          }
+        });
+      }
+
+      async function runSequence() {
+        for (let index = 0; index < paths.length; index += 1) {
+          const src = paths[index];
+
+          if (index > 0) {
+            // Zwischen den Teilen bleibt der Rahmen exakt eine halbe Sekunde schwarz.
+            els.reactionVideo.style.transition = "none";
+            els.reactionVideo.style.opacity = "0";
+            els.reactionVideo.pause();
+            els.reactionVideo.removeAttribute("src");
+            els.reactionVideo.load();
+            await new Promise(done => window.setTimeout(done, 500));
+            if (finished || sequenceFailed) return;
+          }
+
+          try {
+            await playVideoUntilEnd(src);
+          } catch {
+            showReactionError(src);
+            return;
+          }
+        }
+
+        if (finished || sequenceFailed) return;
+        if (waitsForNextClick) showNextButton();
+        else cleanupAndResolve();
+      }
+
       els.reactionLabel.textContent = kind === "correct" ? "Richtig" : "Falsch";
       els.reactionLabel.className = `reaction-label ${kind === "correct" ? "is-correct" : "is-wrong"}`;
       els.reactionFallback.classList.add("is-hidden");
       els.reactionVideo.classList.remove("is-hidden", "is-finished");
+      els.reactionVideo.style.opacity = "1";
+      els.reactionVideo.style.transition = "";
       els.reactionNextBtn.classList.add("is-hidden");
       els.reactionNextBtn.classList.remove("is-ready");
       els.reactionNextBtn.disabled = true;
       els.reactionOverlay.classList.remove("is-hidden");
 
       els.reactionNextBtn.onclick = cleanupAndResolve;
-      els.reactionFallbackBtn.onclick = waitsForNextClick ? showNextButton : cleanupAndResolve;
-      els.reactionVideo.onended = waitsForNextClick ? showNextButton : cleanupAndResolve;
-      els.reactionVideo.onerror = () => {
-        els.reactionVideo.classList.add("is-hidden");
-        els.reactionFallbackText.textContent = `Das Reaktionsvideo ${pad2(question.id)}.mp4 wurde im Ordner ${kind === "correct" ? "Richtig" : "Falsch"} nicht gefunden.`;
-        els.reactionFallback.classList.remove("is-hidden");
-        if (waitsForNextClick) showNextButton();
-      };
-
-      els.reactionVideo.src = src;
-      els.reactionVideo.load();
-      const playPromise = els.reactionVideo.play();
-      if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(() => {
-          els.reactionVideo.classList.add("is-hidden");
-          els.reactionFallbackText.textContent = "Das Reaktionsvideo konnte nicht automatisch gestartet werden.";
-          els.reactionFallback.classList.remove("is-hidden");
-          if (waitsForNextClick) showNextButton();
-        });
-      }
+      runSequence();
     });
   }
 
