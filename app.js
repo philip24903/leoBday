@@ -41,6 +41,7 @@
     solvedCount: document.getElementById("solvedCount"),
     letterBoard: document.getElementById("letterBoard"),
     video: document.getElementById("questionVideo"),
+    videoStage: document.getElementById("videoStage"),
     postVideoImage: document.getElementById("postVideoImage"),
     videoActionBtn: document.getElementById("videoActionBtn"),
     videoMissing: document.getElementById("videoMissing"),
@@ -57,6 +58,8 @@
     continueBtn: document.getElementById("continueBtn"),
     reactionOverlay: document.getElementById("reactionOverlay"),
     reactionVideo: document.getElementById("reactionVideo"),
+    reactionFrame: document.querySelector(".reaction-frame"),
+    reactionCard: document.querySelector(".reaction-card"),
     reactionLabel: document.getElementById("reactionLabel"),
     reactionFallback: document.getElementById("reactionFallback"),
     reactionFallbackText: document.getElementById("reactionFallbackText"),
@@ -346,6 +349,44 @@
     return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
   }
 
+  // Versteckter Entwicklungs-Shortcut: Shift + S + V springt im gerade laufenden Video
+  // auf zwei Sekunden vor Schluss. Das funktioniert für Intro-, Fragen- und Reaktionsvideos.
+  const debugKeysDown = new Set();
+
+  function skipActiveVideoNearEnd() {
+    const candidates = [els.reactionVideo, els.introVideo, els.video];
+    const activeVideo = candidates.find(video =>
+      video &&
+      !video.paused &&
+      !video.ended &&
+      Number.isFinite(video.duration) &&
+      video.duration > 0
+    );
+
+    if (!activeVideo) return;
+    activeVideo.currentTime = Math.max(0, activeVideo.duration - 2);
+  }
+
+  window.addEventListener("keydown", event => {
+    debugKeysDown.add(event.code);
+
+    const shortcutActive = event.shiftKey &&
+      debugKeysDown.has("KeyS") &&
+      debugKeysDown.has("KeyV");
+
+    if (!shortcutActive) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    skipActiveVideoNearEnd();
+  }, true);
+
+  window.addEventListener("keyup", event => {
+    debugKeysDown.delete(event.code);
+  }, true);
+
+  window.addEventListener("blur", () => debugKeysDown.clear());
+
   function updateVideoActionButton() {
     els.videoActionBtn.classList.toggle("is-missing", state.videoMissing);
     els.videoActionBtn.classList.toggle(
@@ -492,6 +533,9 @@
   }
 
   function loadQuestionVideo(question) {
+    const isLandscape = Boolean(question.landscape);
+    els.videoStage.classList.toggle("is-landscape", isLandscape);
+
     state.videoWatched = false;
     state.videoMissing = false;
     state.betweenQuestionVideos = false;
@@ -658,6 +702,9 @@
       let sequenceFailed = false;
       const paths = reactionVideoPaths(kind, question);
       const waitsForNextClick = kind === "correct";
+      const isLandscape = Boolean(question.landscape);
+      els.reactionFrame.classList.toggle("is-landscape", isLandscape);
+      els.reactionCard.classList.toggle("is-landscape", isLandscape);
 
       function clearReactionHandlers() {
         els.reactionVideo.onended = null;

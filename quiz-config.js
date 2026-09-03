@@ -82,6 +82,7 @@ window.QUIZ_CONFIG = {
     },
     {
       id: 7,
+      landscape: true,
       eyebrow: "Mut zur Lücke",
       title: "Welches Zeichen ist gesucht?",
       hint: "Gib den Namen des Zeichens ein. Ist es richtig, wird die Lücke im Lösungswort automatisch gefüllt.",

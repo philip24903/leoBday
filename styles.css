@@ -1304,3 +1304,40 @@ video.is-hidden-media {
     font-size: 1.85rem;
   }
 }
+
+
+/* -------------------------------------------------------
+   v20 – Querformat für einzelne Fragen / Reaktionsvideos
+   ------------------------------------------------------- */
+.video-stage.is-landscape {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+.video-stage.is-landscape video,
+.video-stage.is-landscape .post-video-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.reaction-card.is-landscape {
+  width: min(900px, 100%);
+}
+
+.reaction-frame.is-landscape {
+  width: min(820px, 100%);
+  aspect-ratio: 16 / 9;
+  max-height: 82vh;
+}
+
+@media (max-width: 620px) {
+  .reaction-card.is-landscape {
+    width: 100%;
+  }
+
+  .reaction-frame.is-landscape {
+    width: 100%;
+  }
+}
