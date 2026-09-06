@@ -18,7 +18,8 @@
     currentVideoPart: 0,
     betweenQuestionVideos: false,
     questionPlaybackActive: false,
-    introMode: "opening"
+    introMode: "opening",
+    wrongReactionIndex: 0
   };
 
   const els = {
@@ -521,10 +522,14 @@
       ? config.media.correctDirectory
       : config.media.wrongDirectory;
 
-    const configuredFiles = kind === "correct"
-      ? question.correctVideoFiles
-      : question.wrongVideoFiles;
+    if (kind === "wrong") {
+      const videoCount = Math.max(1, Number(config.media.wrongVideoCount) || 7);
+      const videoNumber = (state.wrongReactionIndex % videoCount) + 1;
+      state.wrongReactionIndex = (state.wrongReactionIndex + 1) % videoCount;
+      return [`${directory}/${pad2(videoNumber)}.mp4`];
+    }
 
+    const configuredFiles = question.correctVideoFiles;
     const files = Array.isArray(configuredFiles) && configuredFiles.length
       ? configuredFiles
       : [`${pad2(question.id)}.mp4`];
@@ -701,7 +706,8 @@
       let finished = false;
       let sequenceFailed = false;
       const paths = reactionVideoPaths(kind, question);
-      const waitsForNextClick = kind === "correct";
+      const isLastQuestion = state.currentIndex === questions.length - 1;
+      const waitsForNextClick = kind === "correct" && !isLastQuestion;
       const isLandscape = Boolean(question.landscape);
       els.reactionFrame.classList.toggle("is-landscape", isLandscape);
       els.reactionCard.classList.toggle("is-landscape", isLandscape);
@@ -912,7 +918,7 @@
     if (!state.resolved || state.interactionLocked) return;
 
     if (state.currentIndex >= questions.length - 1) {
-      playFinaleVideo();
+      showFinale();
       return;
     }
 
@@ -928,35 +934,10 @@
     state.resolvedCorrectly = false;
     state.interactionLocked = false;
     state.revealedSlots.clear();
+    state.wrongReactionIndex = 0;
     buildBoard();
     showScreen(els.quizScreen);
     renderQuestion();
-  }
-
-  function playFinaleVideo() {
-    state.introMode = "finale";
-    const topLine = els.introVideoScreen.querySelector(".intro-video-topline");
-    if (topLine) topLine.classList.add("is-hidden");
-
-    showScreen(els.introVideoScreen);
-    els.introVideoFallback.classList.add("is-hidden");
-    els.introVideo.pause();
-    els.introVideo.removeAttribute("src");
-    els.introVideo.load();
-    els.introVideo.src = config.media.finaleVideo;
-    els.introVideo.load();
-
-    els.introVideo.onended = showFinale;
-    els.introVideo.onerror = () => {
-      showIntroFallback("Das Abschlussvideo wurde nicht gefunden. Du kannst direkt zum Geschenk weitergehen.", "skip");
-    };
-
-    const playPromise = els.introVideo.play();
-    if (playPromise && typeof playPromise.catch === "function") {
-      playPromise.catch(() => {
-        showIntroFallback("Das Abschlussvideo konnte nicht automatisch gestartet werden.", "play");
-      });
-    }
   }
 
   function showFinale() {
