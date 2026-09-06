@@ -10,7 +10,7 @@ window.QUIZ_CONFIG = {
     questionsDirectory: "files/Fragen",
     correctDirectory: "files/Richtig",
     wrongDirectory: "files/Falsch",
-    wrongVideoCount: 7,
+    wrongVideoCount: 8,
     postImages: ["files/bild01.png", "files/bild02.png"]
   },
   moderatorOptions: [
