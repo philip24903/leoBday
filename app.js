@@ -19,7 +19,10 @@
     betweenQuestionVideos: false,
     questionPlaybackActive: false,
     introMode: "opening",
-    wrongReactionIndex: 0
+    wrongReactionIndex: 0,
+    shownCorrectQuestionIds: new Set(),
+    shownWrongVideoNumbers: new Set(),
+    reviewingRemainingVideos: false
   };
 
   const els = {
@@ -517,16 +520,31 @@
     els.video.load();
   }
 
-  function reactionVideoPaths(kind, question) {
+  function reactionVideoInfo(kind, question, options = {}) {
     const directory = kind === "correct"
       ? config.media.correctDirectory
       : config.media.wrongDirectory;
 
     if (kind === "wrong") {
-      const videoCount = Math.max(1, Number(config.media.wrongVideoCount) || 7);
-      const videoNumber = (state.wrongReactionIndex % videoCount) + 1;
-      state.wrongReactionIndex = (state.wrongReactionIndex + 1) % videoCount;
-      return [`${directory}/${pad2(videoNumber)}.mp4`];
+      const videoCount = Math.max(1, Number(config.media.wrongVideoCount) || 8);
+      const forcedNumber = Number(options.wrongVideoNumber);
+      const videoNumber = Number.isInteger(forcedNumber) && forcedNumber >= 1
+        ? forcedNumber
+        : (state.wrongReactionIndex % videoCount) + 1;
+
+      if (!(Number.isInteger(forcedNumber) && forcedNumber >= 1)) {
+        state.wrongReactionIndex = (state.wrongReactionIndex + 1) % videoCount;
+      }
+
+      const landscapeVideos = Array.isArray(config.media.wrongLandscapeVideos)
+        ? config.media.wrongLandscapeVideos.map(Number)
+        : [];
+
+      return {
+        paths: [`${directory}/${pad2(videoNumber)}.mp4`],
+        videoNumber,
+        isLandscape: landscapeVideos.includes(videoNumber)
+      };
     }
 
     const configuredFiles = question.correctVideoFiles;
@@ -534,7 +552,22 @@
       ? configuredFiles
       : [`${pad2(question.id)}.mp4`];
 
-    return files.map(file => `${directory}/${file}`);
+    return {
+      paths: files.map(file => `${directory}/${file}`),
+      videoNumber: null,
+      isLandscape: Boolean(question.landscape)
+    };
+  }
+
+  function markReactionShown(kind, question, info) {
+    if (kind === "correct") {
+      state.shownCorrectQuestionIds.add(question.id);
+      return;
+    }
+
+    if (info.videoNumber !== null && info.videoNumber !== undefined) {
+      state.shownWrongVideoNumbers.add(info.videoNumber);
+    }
   }
 
   function loadQuestionVideo(question) {
@@ -701,16 +734,18 @@
     ], { duration: 520, easing: "ease-out" });
   }
 
-  function playReaction(kind, question) {
+  function playReaction(kind, question, options = {}) {
     return new Promise(resolve => {
       let finished = false;
       let sequenceFailed = false;
-      const paths = reactionVideoPaths(kind, question);
+      const info = reactionVideoInfo(kind, question, options);
+      const paths = info.paths;
       const isLastQuestion = state.currentIndex === questions.length - 1;
-      const waitsForNextClick = kind === "correct" && !isLastQuestion;
-      const isLandscape = Boolean(question.landscape);
-      els.reactionFrame.classList.toggle("is-landscape", isLandscape);
-      els.reactionCard.classList.toggle("is-landscape", isLandscape);
+      const waitsForNextClick = options.forceNextClick === true
+        ? true
+        : (kind === "correct" && !isLastQuestion);
+      els.reactionFrame.classList.toggle("is-landscape", info.isLandscape);
+      els.reactionCard.classList.toggle("is-landscape", info.isLandscape);
 
       function clearReactionHandlers() {
         els.reactionVideo.onended = null;
@@ -734,6 +769,7 @@
         els.reactionNextBtn.classList.remove("is-ready");
         els.reactionNextBtn.disabled = true;
         els.reactionNextBtn.onclick = null;
+        markReactionShown(kind, question, info);
         resolve();
       }
 
@@ -927,6 +963,112 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function remainingReactionItems() {
+    const items = [];
+
+    questions.forEach(question => {
+      if (!state.shownCorrectQuestionIds.has(question.id)) {
+        items.push({ kind: "correct", question });
+      }
+    });
+
+    const wrongVideoCount = Math.max(1, Number(config.media.wrongVideoCount) || 8);
+    for (let videoNumber = 1; videoNumber <= wrongVideoCount; videoNumber += 1) {
+      if (!state.shownWrongVideoNumbers.has(videoNumber)) {
+        items.push({
+          kind: "wrong",
+          question: questions[0],
+          wrongVideoNumber: videoNumber
+        });
+      }
+    }
+
+    return items;
+  }
+
+  function ensureRemainingVideosButton() {
+    let button = document.getElementById("remainingVideosBtn");
+    if (button) return button;
+
+    button = document.createElement("button");
+    button.type = "button";
+    button.id = "remainingVideosBtn";
+    button.textContent = "Verbleibende Videos anzeigen";
+    button.setAttribute("aria-label", "Noch nicht gezeigte Richtig- und Falsch-Videos nacheinander ansehen");
+
+    Object.assign(button.style, {
+      display: "none",
+      margin: "28px auto 0",
+      padding: "14px 22px",
+      borderRadius: "999px",
+      border: "1px solid rgba(214, 173, 98, .7)",
+      background: "linear-gradient(135deg, rgba(214, 173, 98, .98), rgba(183, 139, 66, .98))",
+      color: "#17130c",
+      font: "inherit",
+      fontWeight: "800",
+      letterSpacing: ".02em",
+      cursor: "pointer",
+      boxShadow: "0 10px 30px rgba(0, 0, 0, .24)",
+      transition: "transform .18s ease, opacity .18s ease, filter .18s ease"
+    });
+
+    button.addEventListener("mouseenter", () => {
+      if (!button.disabled) button.style.transform = "translateY(-2px)";
+    });
+    button.addEventListener("mouseleave", () => {
+      button.style.transform = "translateY(0)";
+    });
+    button.addEventListener("click", playRemainingVideos);
+
+    const anchor = els.finalWord.closest("h1, h2, h3, .final-word, .final-word-wrap") || els.finalWord;
+    if (anchor.parentElement) anchor.insertAdjacentElement("afterend", button);
+    else els.finaleScreen.appendChild(button);
+    return button;
+  }
+
+  function updateRemainingVideosButton() {
+    const button = ensureRemainingVideosButton();
+    const count = remainingReactionItems().length;
+
+    if (!count) {
+      button.style.display = "none";
+      button.disabled = false;
+      button.textContent = "Verbleibende Videos anzeigen";
+      return;
+    }
+
+    button.style.display = "block";
+    button.disabled = state.reviewingRemainingVideos;
+    button.style.opacity = state.reviewingRemainingVideos ? ".55" : "1";
+    button.style.cursor = state.reviewingRemainingVideos ? "default" : "pointer";
+    button.textContent = state.reviewingRemainingVideos
+      ? "Videos werden angezeigt …"
+      : "Verbleibende Videos anzeigen";
+  }
+
+  async function playRemainingVideos() {
+    if (state.reviewingRemainingVideos) return;
+
+    const items = remainingReactionItems();
+    if (!items.length) {
+      updateRemainingVideosButton();
+      return;
+    }
+
+    state.reviewingRemainingVideos = true;
+    updateRemainingVideosButton();
+
+    for (const item of items) {
+      await playReaction(item.kind, item.question, {
+        forceNextClick: true,
+        wrongVideoNumber: item.wrongVideoNumber
+      });
+    }
+
+    state.reviewingRemainingVideos = false;
+    updateRemainingVideosButton();
+  }
+
   function startQuiz() {
     state.currentIndex = 0;
     state.attemptsLeft = 3;
@@ -935,6 +1077,9 @@
     state.interactionLocked = false;
     state.revealedSlots.clear();
     state.wrongReactionIndex = 0;
+    state.shownCorrectQuestionIds.clear();
+    state.shownWrongVideoNumbers.clear();
+    state.reviewingRemainingVideos = false;
     buildBoard();
     showScreen(els.quizScreen);
     renderQuestion();
@@ -950,6 +1095,7 @@
     state.introMode = "opening";
     showScreen(els.finaleScreen);
     els.finalWord.textContent = config.finalPhrase;
+    updateRemainingVideosButton();
     launchConfetti();
   }
 

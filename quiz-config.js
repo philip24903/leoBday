@@ -11,6 +11,7 @@ window.QUIZ_CONFIG = {
     correctDirectory: "files/Richtig",
     wrongDirectory: "files/Falsch",
     wrongVideoCount: 8,
+    wrongLandscapeVideos: [8],
     postImages: ["files/bild01.png", "files/bild02.png"]
   },
   moderatorOptions: [
